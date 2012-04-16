@@ -18,19 +18,21 @@ class TextMailer < ActionMailer::Base
     mail = MMS2R::Media.new(message)        # process mail to handle MMS if sent from phone
 
     if mail.is_mobile?
+	puts "Mobile"
         @subject = "<None>"
 	@email = message.from[0].to_s
 	@cell = mail.number
         file = mail.default_text
 	text = IO.readlines(mail.media['text/plain'].first).join
-	puts "mail had text: #{text}" unless text.nil?
+#	puts "mail had text: #{text}" unless text.nil?
+        puts "cell #: {@cell}" unless @cell.nil?
         @subject = text unless text.nil?
         file = mail.default_media
-        puts "mail had media: #{file.inspect}" unless file.nil?
+#        puts "mail had media: #{file.inspect}" unless file.nil?
 	if file.inspect.include? '.txt'
 		puts "but media was text" 
 	else
-		avatar_file = file 
+#		avatar_file = file 
 	end
     else
 	@subject = message.subject
@@ -56,9 +58,10 @@ class TextMailer < ActionMailer::Base
 #      user.email = @email
 #      user.avatar = avatar_file unless avatar_file.nil?
 
-#      UserMailer.receipt_confirmation(user).deliver unless user.nil?
+      UserMailer.registration_confirmation(@email).deliver unless user.nil?
 
 #    end
+
     return true
   end
 end
