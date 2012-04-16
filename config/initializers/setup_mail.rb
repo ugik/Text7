@@ -1,6 +1,6 @@
 ActionMailer::Base.smtp_settings = {
 	:address		=> "smtpout.secureserver.net",
-	:port		=> 80,
+	:port		=> 465,
 	:domain		=> "text7.com",
 	:user_name	=> "u",
 	:password	=> "cassimere",
