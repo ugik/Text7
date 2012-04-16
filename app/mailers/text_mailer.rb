@@ -59,6 +59,7 @@ class TextMailer < ActionMailer::Base
 #      UserMailer.receipt_confirmation(user).deliver unless user.nil?
 
 #    end
+    return true
   end
 end
 

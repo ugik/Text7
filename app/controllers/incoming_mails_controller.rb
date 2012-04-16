@@ -5,7 +5,7 @@ class IncomingMailsController < ApplicationController
   def create
     stuff = TextMailer.receive(Mail.new(params[:message]))
 
-     if !stuff.new_record?
+     if !stuff
 	render :text => "Success", :status => 201, :content_type => Mime::TEXT.to_s
     else
 	render :text => stuff.errors.full_messages.join(', '), :status => 422, :content_type => Mime::TEXT.to_s
@@ -15,3 +15,4 @@ class IncomingMailsController < ApplicationController
 
   end
 end
+
