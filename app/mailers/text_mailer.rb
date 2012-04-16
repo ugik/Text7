@@ -58,7 +58,7 @@ class TextMailer < ActionMailer::Base
 #      user.email = @email
 #      user.avatar = avatar_file unless avatar_file.nil?
 
-      UserMailer.registration_confirmation(@email).deliver unless user.nil?
+      UserMailer.registration_confirmation(@email).deliver unless @email.nil?
 
 #    end
 
