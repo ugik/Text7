@@ -1,23 +1,10 @@
 class UserMailer < ActionMailer::Base
   default :from => "u@text7.com"
 
-	def registration_confirmation(email, subject)
-		@email = email
-		mail(:to => "<#{email}>", :subject => subject)
-	end
 
-	def registration_confirmation_existing(email, subject)
+	def general(email, subject, body="")
 		@email = email
-		mail(:to => "<#{email}>", :subject => subject)
-	end
-
-	def registration_email_denial(email, subject)
-		@email = email
-		mail(:to => "<#{email}>", :subject => subject)
-	end
-
-	def general(email, subject)
-		@email = email
+		@body = body
 		mail(:to => "<#{email}>", :subject => subject)
 	end
 

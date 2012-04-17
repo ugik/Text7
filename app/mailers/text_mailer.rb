@@ -73,43 +73,37 @@ class TextMailer < ActionMailer::Base
   end
 
 # called when ready to respond to user
-  def responder(email, type, subject=nil)
+  def responder(email, type, subject="", body="")
 
 	@subject = subject
 	@email = email
-	@msg = ""
-	if @email.include? 'att'	# handle at&t (use 41 chars in subject)
-
-	end
 	@user = User.find_by_cell(@email)
 	@ping = @user.settings["ping"] unless @user.nil?
 
 	case type
 		when "registration_confirmation"
-                                      #1234567890123456789012345678901234567890
-			@msg = "You are now registered on Text7.com, Text HELP for assistance"
+                                           #1234567890123456789012345678901234567890
+			@subject = "You are now registered on Text7.com"
+			@body = "Text HELP for assistance"
 		when "registration_existing"
-			@msg = "Text7.com visit ##{@ping}, Text HELP for assistance"
+			@subject = "Text7.com visit ##{@ping}"
+			@body = "Text HELP for assistance"			
 		when "registration_email_denial"
-			@msg = "To register on Text7.com please Text(sms) to: u@Text7.com"
-		when "general"
+			@subject = "To register on Text7.com"
+			@msg = "Please Text(sms) to: u@Text7.com"
+		when "response"
 			@msg = subject
 		else
 			puts "Responder Type #{type} ?"
 	end
- 
 
-	case type
-		when "registration_confirmation"
-			UserMailer.registration_confirmation(@email, @subject).deliver unless @email.nil?
-		when "registration_confirmation_existing"
-			UserMailer.registration_existing(@email, @subject).deliver unless @email.nil?
-		when "registration_email_denial"
-			UserMailer.registration_email_denial(@email, @subject).deliver unless @email.nil?
-		when "general"
-			UserMailer.general(@email, @subject).deliver unless @email.nil?
-		else
-		  puts "Responder Type #{type} ?"
+	if @email.include? 'att'	# handle at&t (use 41 chunk chars in subject, no body)
+		UserMailer.general(@email, @subject).deliver
+		UserMailer.general(@email, @body[0..40]).deliver
+		UserMailer.general(@email, @body[41..80).deliver if @body.length>40
+		UserMailer.general(@email, @body[81..120).deliver if @body.length>80
+	else
+		UserMailer.general(@email, @subject, @body).deliver unless @email.nil?
 	end
   end
 
