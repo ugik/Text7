@@ -40,12 +40,17 @@ class TextMailer < ActionMailer::Base
 		@email.gsub!('txt','mms')
 	end
 
-	User.create do |user|	# create the user
-		user.cell = @email
+	@user = User.find_by_cell(@email)
+	if @user.nil?
+		User.create do |user|	# create the user
+			user.cell = @email
+			user.settings["pings"] = 1
+		end
+		UserMailer.registration_confirmation(@email).deliver unless @email.nil?
+	else
+		user.settings.["pings"] += 1
+		UserMailer.registration_confirmation_existing(@email).deliver unless @email.nil?
 	end
-
-	UserMailer.registration_confirmation(@email).deliver unless @email.nil?
-
     else
 	@subject = message.subject
 
@@ -57,6 +62,9 @@ class TextMailer < ActionMailer::Base
 #        	avatar_file.original_filename = attachment.filename
 #       	avatar_file.content_type = attachment.mime_type
 	end
+
+	UserMailer.registration_email_denial(@email).deliver unless @email.nil?
+
     end
 
     puts @email + " : " + @subject
