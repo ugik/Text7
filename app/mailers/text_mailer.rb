@@ -48,7 +48,7 @@ class TextMailer < ActionMailer::Base
 		end
 		responder(@email, "registration_confirmation")
 	else
-		user.settings.["pings"]+=1
+		user.settings["pings"]+=1
 		responder(@email, "registration_existing")
 	end
     else
