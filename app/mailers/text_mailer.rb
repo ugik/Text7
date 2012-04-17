@@ -17,15 +17,16 @@ class TextMailer < ActionMailer::Base
 
     mail = MMS2R::Media.new(message)        # process mail to handle MMS if sent from phone
 
+    @email = message.from[0].to_s	# first address in array
     if mail.is_mobile?
 	puts "Mobile"
         @subject = "<None>"
-	@email = message.from[0].to_s
 	@cell = mail.number
         file = mail.default_text
 	text = IO.readlines(mail.media['text/plain'].first).join
 #	puts "mail had text: #{text}" unless text.nil?
         puts "cell #: #{@cell}" unless @cell.nil?
+
         @subject = text unless text.nil?
         file = mail.default_media
 #        puts "mail had media: #{file.inspect}" unless file.nil?
@@ -34,9 +35,12 @@ class TextMailer < ActionMailer::Base
 	else
 #		avatar_file = file 
 	end
+
+	if @email.include? 'att'	# handle at&t cell, switch to mms
+		@email.gsub!('txt','mms')
+	end
     else
 	@subject = message.subject
-	@email = message.from[0].to_s	# first address in array
 
         # Create an AttachmentFile subclass of a tempfile with paperclip aware features and add it
 	if attachment!=nil
