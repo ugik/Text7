@@ -1,23 +1,26 @@
 class UserMailer < ActionMailer::Base
   default :from => "u@text7.com"
 
-	def registration_confirmation(email)
+	def registration_confirmation(email, subject)
 		@email = email
-#		mail(:to => "#{user.name} <#{email}>", :subject => "Registered")
-		mail(:to => "<#{email}>", :subject => "Registered")
+		mail(:to => "<#{email}>", :subject => subject)
 	end
 
-	def registration_confirmation_existing(email)
+	def registration_confirmation_existing(email, subject)
 		@email = email
-#		mail(:to => "#{user.name} <#{email}>", :subject => "Already Registered")
-		mail(:to => "<#{email}>", :subject => "Already Registered")
+		mail(:to => "<#{email}>", :subject => subject)
 	end
 
-	def registration_email_denial(email)
+	def registration_email_denial(email, subject)
 		@email = email
-#		mail(:to => "#{user.name} <#{email}>", :subject => "Please register via sms text")
-		mail(:to => "<#{email}>", :subject => "Please register via sms text")
+		mail(:to => "<#{email}>", :subject => subject)
 	end
+
+	def general(email, subject)
+		@email = email
+		mail(:to => "<#{email}>", :subject => subject)
+	end
+
 
 	def receipt_confirmation(user)
 		@user = user

@@ -25,7 +25,7 @@ class TextMailer < ActionMailer::Base
         file = mail.default_text
 	text = IO.readlines(mail.media['text/plain'].first).join
 #	puts "mail had text: #{text}" unless text.nil?
-        puts "cell #: #{@cell}" unless @cell.nil?
+#      puts "cell #: #{@cell}" unless @cell.nil?
 
         @subject = text unless text.nil?
         file = mail.default_media
@@ -44,12 +44,12 @@ class TextMailer < ActionMailer::Base
 	if @user.nil?
 		User.create do |user|	# create the user
 			user.cell = @email
-			user.settings["pings"] = 1
+			user.settings["pings"] = 1	# keep track of times used
 		end
-		UserMailer.registration_confirmation(@email).deliver unless @email.nil?
+		responder(@email, "registration_confirmation")
 	else
 		user.settings.["pings"] += 1
-		UserMailer.registration_confirmation_existing(@email).deliver unless @email.nil?
+		responder(@email, "registration_existing")
 	end
     else
 	@subject = message.subject
@@ -62,8 +62,7 @@ class TextMailer < ActionMailer::Base
 #        	avatar_file.original_filename = attachment.filename
 #       	avatar_file.content_type = attachment.mime_type
 	end
-
-	UserMailer.registration_email_denial(@email).deliver unless @email.nil?
+	responder(@email,"registration_email_denial")
 
     end
 
@@ -72,5 +71,47 @@ class TextMailer < ActionMailer::Base
 
     return true
   end
+
+# called when ready to respond to user
+  def responder(email, type, subject=nil)
+
+	@subject = subject
+	@email = email
+	@msg = ""
+	if @email.include? 'att'	# handle at&t (use 41 chars in subject)
+
+	end
+	@user = User.find_by_cell(@email)
+	@ping = @user.settings["ping"] unless @user.nil?
+
+	case type
+		when "registration_confirmation"
+                                      #1234567890123456789012345678901234567890
+			@msg = "You are now registered on Text7.com, Text HELP for assistance"
+		when "registration_existing"
+			@msg = "Text7.com visit ##{@ping}, Text HELP for assistance"
+		when "registration_email_denial"
+			@msg = "To register on Text7.com please Text(sms) to: u@Text7.com"
+		when "general"
+			@msg = subject
+		else
+			puts "Responder Type #{type} ?"
+	end
+ 
+
+	case type
+		when "registration_confirmation"
+			UserMailer.registration_confirmation(@email, @subject).deliver unless @email.nil?
+		when "registration_confirmation_existing"
+			UserMailer.registration_existing(@email, @subject).deliver unless @email.nil?
+		when "registration_email_denial"
+			UserMailer.registration_email_denial(@email, @subject).deliver unless @email.nil?
+		when "general"
+			UserMailer.general(@email, @subject).deliver unless @email.nil?
+		else
+		  puts "Responder Type #{type} ?"
+	end
+  end
+
 end
 
