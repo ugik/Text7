@@ -1,8 +1,9 @@
+ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.smtp_settings = {
 	:address		=> "smtpout.secureserver.net",
-	:port		=> 3535,
+	:port		=> 80,
 	:domain		=> "text7.com",
-	:user_name	=> "u",
+	:user_name	=> "u@text7.com",
 	:password	=> "cassimere",
 	:authentication => "plain"
 }

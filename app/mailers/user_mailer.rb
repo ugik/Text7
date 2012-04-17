@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default :from => "ugikma@gmail.com"
+  default :from => "u@text7.com"
 
 	def registration_confirmation(email)
 		@email = email
