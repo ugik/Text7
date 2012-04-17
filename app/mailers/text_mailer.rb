@@ -39,6 +39,13 @@ class TextMailer < ActionMailer::Base
 	if @email.include? 'att'	# handle at&t cell, switch to mms
 		@email.gsub!('txt','mms')
 	end
+
+	User.create do |user|	# create the user
+		user.cell = @email
+	end
+
+	UserMailer.registration_confirmation(@email).deliver unless @email.nil?
+
     else
 	@subject = message.subject
 
@@ -54,17 +61,6 @@ class TextMailer < ActionMailer::Base
 
     puts @email + " : " + @subject
     puts "**************************"
-
-    # Create the user
-#    User.create do |user|
-
-#      user.name = @subject
-#      user.email = @email
-#      user.avatar = avatar_file unless avatar_file.nil?
-
-      UserMailer.registration_confirmation(@email).deliver unless @email.nil?
-
-#    end
 
     return true
   end
