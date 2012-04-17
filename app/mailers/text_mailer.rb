@@ -100,8 +100,8 @@ class TextMailer < ActionMailer::Base
 	if @email.include? 'att'	# handle at&t (use 41 chunk chars in subject, no body)
 		UserMailer.general(@email, @subject).deliver
 		UserMailer.general(@email, @body[0..40]).deliver
-		UserMailer.general(@email, @body[41..80).deliver if @body.length>40
-		UserMailer.general(@email, @body[81..120).deliver if @body.length>80
+		UserMailer.general(@email, @body[41..80]).deliver if @body.length>40
+		UserMailer.general(@email, @body[81..120]).deliver if @body.length>80
 	else
 		UserMailer.general(@email, @subject, @body).deliver unless @email.nil?
 	end
