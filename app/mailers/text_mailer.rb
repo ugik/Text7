@@ -44,11 +44,11 @@ class TextMailer < ActionMailer::Base
 	if @user.nil?
 		User.create do |user|	# create the user
 			user.cell = @email
-			user.settings["pings"] = 1	# keep track of times used
+			user.settings["pings"]=1	# keep track of times used
 		end
 		responder(@email, "registration_confirmation")
 	else
-		user.settings.["pings"] += 1
+		user.settings.["pings"]+=1
 		responder(@email, "registration_existing")
 	end
     else
