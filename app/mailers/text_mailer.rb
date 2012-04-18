@@ -48,7 +48,7 @@ class TextMailer < ActionMailer::Base
 		end
 		responder(@email, "registration_confirmation")
 	else
-		user.settings["pings"]+=1
+		@user.settings["pings"]+=1
 		responder(@email, "registration_existing")
 	end
     else
@@ -90,7 +90,7 @@ class TextMailer < ActionMailer::Base
 			@body = "Text HELP for assistance"			
 		when "registration_email_denial"
 			@subject = "To register on Text7.com"
-			@msg = "Please Text(sms) to: u@Text7.com"
+			@body = "Please Text(sms) to: u@Text7.com"
 		when "response"
 			@msg = subject
 		else
