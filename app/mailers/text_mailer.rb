@@ -48,7 +48,11 @@ class TextMailer < ActionMailer::Base
 		end
 		responder(@email, "registration_confirmation")
 	else
-		@user.settings["pings"]+=1
+		if @user.settings["pings"].nil?
+			@user.settings["pings"]=1
+		else
+			@user.settings["pings"]+=1
+		end
 		@user.save
 		responder(@email, "registration_existing")
 	end
