@@ -7,7 +7,7 @@ class UserMailer < ActionMailer::Base
 		@body = body
 
 puts "Body: "+ @body
-		@test = "12345"
+		@test = body
 
 		attachments["Text7.png"] = File.read("#{Rails.root}/public/images/Text7.png") if logo
 
