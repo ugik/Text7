@@ -78,7 +78,7 @@ class TextMailer < ActionMailer::Base
 	@subject = subject
 	@email = email
 	@user = User.find_by_cell(@email)
-	@ping = @user.settings["ping"] unless @user.nil?
+	@pings = @user.settings["pings"] unless @user.nil?
 
 	case type
 		when "registration_confirmation"
@@ -86,7 +86,7 @@ class TextMailer < ActionMailer::Base
 			@subject = "You are now registered on Text7.com"
 			@body = "Text HELP for assistance"
 		when "registration_existing"
-			@subject = "Text7.com visit ##{@ping}"
+			@subject = "Text7.com visit ##{@pings}"
 			@body = "Text HELP for assistance"			
 		when "registration_email_denial"
 			@subject = "To register on Text7.com"
