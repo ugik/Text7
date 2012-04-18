@@ -93,6 +93,7 @@ class TextMailer < ActionMailer::Base
 			@subject = "To register on Text7.com"
 			@body = "Please Text(sms) to: u@Text7.com"
 		when "response"
+			@subject = "Text7.com"
 			@body = subject
 		else
 			puts "Responder Type #{type} ?"
