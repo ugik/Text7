@@ -4,10 +4,9 @@ class UserMailer < ActionMailer::Base
 
 	def general(email, subject, body=nil, logo=false)
 		@email = email
-		@body = body
+		@content = body
 
-puts "Body: "+ @body
-		@test = body
+puts "Content: "+ @content
 
 		attachments["Text7.png"] = File.read("#{Rails.root}/public/images/Text7.png") if logo
 
