@@ -85,10 +85,10 @@ class TextMailer < ActionMailer::Base
 		when "registration_confirmation"
                                            #1234567890123456789012345678901234567890
 			@subject = "You are now registered on Text7.com"
-			@body = "Text HELP for assistance"
+			@body = "Reply HELP for assistance"
 		when "registration_existing"
 			@subject = "Text7.com visit ##{@pings}"
-			@body = "Text HELP for assistance"			
+			@body = "Reply HELP for assistance"			
 		when "registration_email_denial"
 			@subject = "To register on Text7.com"
 			@body = "Please Text(sms) to: u@Text7.com"
