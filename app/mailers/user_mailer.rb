@@ -2,7 +2,7 @@ class UserMailer < ActionMailer::Base
   default :from => "u@text7.com"
 
 
-	def general(email, subject, body=nil, logo=false)
+	def general(email, subject, body, logo=false)
 		@email = email
 		@body = body
 		
