@@ -12,7 +12,7 @@ class TextMailer < ActionMailer::Base
 
     puts "**************************"
     if message.body.decoded.include? 'confirmation code'	# handle email forwarding verification
-        puts message.body.decoded
+#        puts message.body.decoded
     end
 
     mail = MMS2R::Media.new(message)        # process mail to handle MMS if sent from phone
@@ -95,6 +95,11 @@ class TextMailer < ActionMailer::Base
 				subject = "Visit ##{pings} Reply HELP for assistance"
 				body = ""
 			end
+
+			if response["all"]
+				puts "Handling ALL scenario"
+			end
+
 		when "registration_email_denial"
 			subject = "To register:"
 			body = "Please Text(sms) to: u@Text7.com"
@@ -117,18 +122,24 @@ class TextMailer < ActionMailer::Base
 
 # called when processing user request
   def processor(email, subject)
-	
+
+	sub = subject.split[0...1][0].upcase	unless subject.nil?   # get first word from subject
 	response = {}
-	case subject.upcase.strip
+	case sub
 		when "HELLO"
                                                    #1234567890123456789012345678901234567890123456789
 			response["subject"]="Hello, thanks for texting."
 		when "HELP"
                                                    #1234567890123456789012345678901234567890123456789
-			response["subject"]="HELP=this list CREATE {group} JOIN {group}"
-			response["body"]="MSG {group} LEAVE {group} DELETE {group} UNREGISTER"
+			response["subject"]="HELP | HELLO | ALL {msg}"
+#			response["subject"]="HELP | CREATE {group} |  JOIN {group}"
+#			response["body"]="MSG {group} | LEAVE {group} | DELETE {group}"
+		when "ALL"
+			response["all"]=true
+			response["subject"]=email
+			response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
 		else
-			puts "Processing: #{subject}"
+			puts "Not sure how to process: #{subject}"
 			response["blank"]=true
 	end
 	return response
