@@ -113,6 +113,9 @@ class TextMailer < ActionMailer::Base
 	end
 
 	if single_response	# single response cases
+
+		puts "=> Single Response"
+
 		sender(email, subject, body)
 	else		# responses to multiple users
 		User.find_each do |user|
