@@ -11,7 +11,10 @@ class TextMailer < ActionMailer::Base
     attachment = message.attachments.first
 
     puts "**************************"
-    puts message.inspect
+#    puts "Inspect:"+ message.inspect
+    puts "Date: "+ message.date
+    puts "    ID:" + message.message-ID
+
     if message.body.decoded.include? 'confirmation code'	# handle email forwarding verification
 #        puts message.body.decoded
     end
