@@ -123,14 +123,16 @@ puts "response: " + response.to_s
 	
 	response = {}
 	case subject.upcase.strip!
-		when ""
-			response["blank"]=true
+		when "HELLO"
+                                                   #1234567890123456789012345678901234567890123456789
+			response["subject"]="Hello, thanks for texting."
 		when "HELP"
                                                    #1234567890123456789012345678901234567890123456789
 			response["subject"]="HELP=this list CREATE {group} JOIN {group}"
-			response["body"]="LEAVE {group} DELETE {group} UNREGISTER"
+			response["body"]="MSG {group} LEAVE {group} DELETE {group} UNREGISTER"
 		else
 			puts "Processing: #{subject}"
+			response["blank"]=true
 	end
 	return response
   end
