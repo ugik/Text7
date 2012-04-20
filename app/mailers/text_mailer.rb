@@ -46,7 +46,7 @@ class TextMailer < ActionMailer::Base
 			user.cell = @email
 			user.settings["pings"]=1	# keep track of times used
 		end
-		responder(@email, "registration_confirmation")
+		responder(@email, @subject, "registration_confirmation")
 	else
 		if @user.settings["pings"].nil?
 			@user.settings["pings"]=1
@@ -54,7 +54,7 @@ class TextMailer < ActionMailer::Base
 			@user.settings["pings"]+=1
 		end
 		@user.save
-		responder(@email, "registration_existing")
+		responder(@email, @subject, "registration_existing")
 	end
     else
 	@subject = message.subject
@@ -67,7 +67,7 @@ class TextMailer < ActionMailer::Base
 #        	avatar_file.original_filename = attachment.filename
 #       	avatar_file.content_type = attachment.mime_type
 	end
-	responder(@email,"registration_email_denial")
+	responder(@email, @subject, "registration_email_denial")
 
     end
 
@@ -78,40 +78,59 @@ class TextMailer < ActionMailer::Base
   end
 
 # called when ready to respond to user
-  def responder(email, type, subject="", body="")
+  def responder(email, subject, type="general")
 
-	@subject = subject
-	@email = email
-	@user = User.find_by_cell(@email)
-	@pings = @user.settings["pings"] unless @user.nil?
+	user = User.find_by_cell(email)
+	pings = user.settings["pings"] unless user.nil?
 
 	case type
 		when "registration_confirmation"
-                                           #1234567890123456789012345678901234567890
-			@subject = "You are now registered on Text7.com"
-			@body = "Reply HELP for assistance"
+			subject = "You are now registered, welcome."
+			body = "Reply HELP for assistance"
 		when "registration_existing"
-			@subject = "Text7.com visit ##{@pings}"
-			@body = "Reply HELP for assistance"			
+			response = processor(email, subject)
+			subject = response["subject"]
+			body = response["body"]
+
+			if response["blank"]
+                                              #1234567890123456789012345678901234567890
+				subject = "Visit ##{@pings} Reply HELP for assistance"
+				body = ""
+			end
 		when "registration_email_denial"
-			@subject = "To register on Text7.com"
-			@body = "Please Text(sms) to: u@Text7.com"
+			subject = "To register:"
+			body = "Please Text(sms) to: u@Text7.com"
 		when "response"
-			@subject = "Text7.com"
-			@body = subject
+			subject = "Text7.com"
+			body = subject
 		else
 			puts "Responder Type #{type} ?"
 	end
 
-	if @email.include? 'att'	# handle at&t (use 41 char CHUNKS in subject, no body)
-		UserMailer.general(@email, @subject).deliver
-		UserMailer.general(@email, @body[0..40]).deliver if @body.length>0
-		UserMailer.general(@email, @body[41..80]).deliver if @body.length>40
-		UserMailer.general(@email, @body[81..120]).deliver if @body.length>80
+	if email.include? 'att'	# handle at&t (use 41 char CHUNKS in subject, no body)
+		UserMailer.general(email, subject).deliver
+		UserMailer.general(email, body[0..40]).deliver if body.length>0
+		UserMailer.general(email, body[41..80]).deliver if body.length>40
+		UserMailer.general(email, body[81..120]).deliver if body.length>80
 	else
-		UserMailer.general(@email, @subject, @body).deliver unless @email.nil?
+		UserMailer.general(email, subject, body).deliver unless email.nil?
 	end
   end
 
+# called when processing user request
+  def processor(email, subject)
+	
+	response = {}
+	case subject.upcase.strip!
+		when ""
+			response["blank"]=true
+		when "HELP"
+                                                   #1234567890123456789012345678901234567890123456789
+			response["subject"]="HELP=this list CREATE {group} JOIN {group}"
+			response["body"]="LEAVE {group} DELETE {group} UNREGISTER"
+		else
+			puts "Processing: #{subject}"
+	end
+  end
 end
 
