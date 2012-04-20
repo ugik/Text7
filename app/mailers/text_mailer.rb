@@ -48,7 +48,7 @@ puts "Creating New User #{@email}"
 		User.create do |user|	# create the user
 			user.cell = @email
 			user.settings["pings"]=1	# keep track of times used
-puts "Created User #{user.cell}
+puts "Created User #{user.cell}"
 		end
 		responder(@email, @subject, "registration_confirmation")
 	else
