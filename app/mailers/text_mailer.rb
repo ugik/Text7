@@ -19,7 +19,6 @@ class TextMailer < ActionMailer::Base
 
     @email = message.from[0].to_s	# first address in array
     if mail.is_mobile?
-	puts "Mobile"
         @subject = "<None>"
 	@cell = mail.number
         file = mail.default_text
@@ -31,7 +30,7 @@ class TextMailer < ActionMailer::Base
         file = mail.default_media
 #        puts "mail had media: #{file.inspect}" unless file.nil?
 	if file.inspect.include? '.txt'
-		puts "but media was text" 
+#		puts "but media was text" 
 	else
 #		avatar_file = file 
 	end
@@ -122,12 +121,11 @@ puts "response: " + response.to_s
   def processor(email, subject)
 	
 	response = {}
-puts subject.upcase.strip!
-	case subject.upcase.strip!
+puts subject.upcase.strip
+	case subject.upcase.strip
 		when "HELLO"
                                                    #1234567890123456789012345678901234567890123456789
 			response["subject"]="Hello, thanks for texting."
-puts "Processing Hello"
 		when "HELP"
                                                    #1234567890123456789012345678901234567890123456789
 			response["subject"]="HELP=this list CREATE {group} JOIN {group}"
