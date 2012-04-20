@@ -116,14 +116,14 @@ class TextMailer < ActionMailer::Base
 	end
 
 	if single_response	# single response cases
-		sender(email, subject, body, sent)
+		sender(sent, email, subject, body)
 	else		# responses to multiple users
 		User.find_each do |user|
 			if user.cell!=email		# don't send msg to sender
 				sender(sent, user.cell, subject, body)
 			end
 		end
-		sender(email, "Sent #{User.count-1} msgs")
+		sender(sent, email, "Sent #{User.count-1} msgs")
 	end
   end
 
