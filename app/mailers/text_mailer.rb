@@ -154,7 +154,7 @@ class TextMailer < ActionMailer::Base
 			response["subject"]="Hello, thanks for texting."
 		when "HELP"
                                                    #1234567890123456789012345678901234567890123456789
-			response["subject"]="HELP | HELLO | ALL {msg}"
+			response["body"]="HELP | HELLO | ALL {msg}"
 #			response["subject"]="HELP | CREATE {group} |  JOIN {group}"
 #			response["body"]="MSG {group} | LEAVE {group} | DELETE {group}"
 		when "ALL"
