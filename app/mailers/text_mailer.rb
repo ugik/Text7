@@ -95,7 +95,7 @@ class TextMailer < ActionMailer::Base
 puts "response: " + response.to_s
 			if response["blank"]
                                               #1234567890123456789012345678901234567890
-				subject = "Visit ##{@pings} Reply HELP for assistance"
+				subject = "Visit ##{pings} Reply HELP for assistance"
 				body = ""
 			end
 		when "registration_email_denial"
@@ -122,10 +122,12 @@ puts "response: " + response.to_s
   def processor(email, subject)
 	
 	response = {}
+puts subject.upcase.strip!
 	case subject.upcase.strip!
 		when "HELLO"
                                                    #1234567890123456789012345678901234567890123456789
 			response["subject"]="Hello, thanks for texting."
+puts "Processing Hello"
 		when "HELP"
                                                    #1234567890123456789012345678901234567890123456789
 			response["subject"]="HELP=this list CREATE {group} JOIN {group}"
