@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   serialize :settings, Hash
 
   validates :cell,  :presence => true,
-                    :length   => { :maximum => 25 },
+                    :length   => { :maximum => 45 },
                     :uniqueness => { :case_sensitive => false }
 
 end
