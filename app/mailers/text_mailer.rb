@@ -99,7 +99,7 @@ class TextMailer < ActionMailer::Base
 			end
 
 			if response["all"]
-#				single_response = false
+				single_response = false
 			end
 
 		when "registration_email_denial"
@@ -116,7 +116,6 @@ class TextMailer < ActionMailer::Base
 		sender(email, subject, body)
 	else		# responses to multiple users
 		User.find_each do |user|
-			puts user.cell
 			if user.cell!=email		# don't send msg to sender
 				sender(user.email, subject, body)
 				puts "Sent msg to #{user.email}"
@@ -128,10 +127,14 @@ class TextMailer < ActionMailer::Base
 # called to send text
   def sender (email, subject, body, logo=false)
 	if email.include? 'att'	# handle at&t (use 41 char CHUNKS in subject, no body)
-		UserMailer.general(email, subject).deliver
-		UserMailer.general(email, body[0..40]).deliver if body.length>0
-		UserMailer.general(email, body[41..80]).deliver if body.length>40
-		UserMailer.general(email, body[81..120]).deliver if body.length>80
+		if (subject.body).length<41	# can it fit in subject?
+			UserMailer.general(email, subject+"/"+body).deliver
+		else
+			UserMailer.general(email, subject).deliver
+			UserMailer.general(email, body[0..40]).deliver if body.length>0
+			UserMailer.general(email, body[41..80]).deliver if body.length>40
+			UserMailer.general(email, body[81..120]).deliver if body.length>80
+		end
 	else
 		UserMailer.general(email, subject, body).deliver unless email.nil?
 	end
