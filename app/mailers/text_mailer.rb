@@ -82,6 +82,8 @@ class TextMailer < ActionMailer::Base
 	user = User.find_by_cell(email)
 	pings = user.settings["pings"] unless user.nil?
 
+	single_response = true
+
 	case type
 		when "registration_confirmation"
 			subject = "You are now registered, welcome."
@@ -97,7 +99,7 @@ class TextMailer < ActionMailer::Base
 			end
 
 			if response["all"]
-				puts "Handling ALL scenario"
+#				single_response = false
 			end
 
 		when "registration_email_denial"
@@ -110,6 +112,19 @@ class TextMailer < ActionMailer::Base
 			puts "Responder Type #{type} ?"
 	end
 
+	if single_response	# single response cases
+		sender(email, subject, body)
+	else		# responses to multiple users
+		User.find_each do |user|
+			if user.email!=email		# don't send msg to sender
+				sender(user.email, subject, body)
+			end
+		end
+	end
+  end
+
+# called to send text
+  def sender (email, subject, body, logo=false)
 	if email.include? 'att'	# handle at&t (use 41 char CHUNKS in subject, no body)
 		UserMailer.general(email, subject).deliver
 		UserMailer.general(email, body[0..40]).deliver if body.length>0

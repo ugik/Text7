@@ -6,8 +6,6 @@ class UserMailer < ActionMailer::Base
 		@email = email
 		@content = body
 
-puts "Content: #{@content}"
-
 		attachments["Text7.png"] = File.read("#{Rails.root}/public/images/Text7.png") if logo
 
 		mail(:to => "<#{email}>", :subject => subject)
