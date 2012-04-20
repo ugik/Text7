@@ -125,7 +125,7 @@ class TextMailer < ActionMailer::Base
   end
 
 # called to send text
-  def sender (email, subject, body=nil, logo=false)
+  def sender (email, subject="", body="", logo=false)
 	if email.include? 'att'	# handle at&t (use 41 char CHUNKS in subject, no body)
 		if (subject+body).length<39	# can it fit in subject?
 			UserMailer.general(email, subject+" / "+body).deliver
