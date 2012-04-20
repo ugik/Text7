@@ -23,7 +23,7 @@ class TextMailer < ActionMailer::Base
         @subject = "<None>"
 	@cell = mail.number
         file = mail.default_text
-	text = IO.readlines(mail.media['text/plain'].first).join unless mail.media['text/plain']=nil
+	text = IO.readlines(mail.media['text/plain'].first).join unless mail.media['text/plain'].nil?
 #	puts "mail had text: #{text}" unless text.nil?
 #      puts "cell #: #{@cell}" unless @cell.nil?
 
