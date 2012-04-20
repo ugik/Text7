@@ -48,7 +48,7 @@ class TextMailer < ActionMailer::Base
 			user.cell = @email
 			user.settings["pings"]=1	# keep track of times used
 		end
-		responder(@email, @subject, "registration_confirmation")
+		responder(@email, @subject, message.date, "registration_confirmation")
 	else
 		if @user.settings["pings"].nil?
 			@user.settings["pings"]=1
@@ -56,7 +56,7 @@ class TextMailer < ActionMailer::Base
 			@user.settings["pings"]+=1
 		end
 		@user.save
-		responder(@email, @subject, "registration_existing")
+		responder(@email, @subject, message.date, "registration_existing")
 	end
     else
 	@subject = message.subject
@@ -69,18 +69,18 @@ class TextMailer < ActionMailer::Base
 #        	avatar_file.original_filename = attachment.filename
 #       	avatar_file.content_type = attachment.mime_type
 	end
-	responder(@email, @subject, "registration_email_denial")
+	responder(@email, @subject, message.date, "registration_email_denial")
 
     end
 
-    puts @email + " : " + @subject
+    puts @email + " : " + @subject + " : " + message.date.to_s
     puts "**************************"
 
     return true
   end
 
 # called when ready to respond to user
-  def responder(email, subject, type="general")
+  def responder(email, subject, sent, type="general")
 
 	user = User.find_by_cell(email)
 	pings = user.settings["pings"] unless user.nil?
@@ -92,7 +92,7 @@ class TextMailer < ActionMailer::Base
 			subject = "You are now registered, welcome."
 			body = "Reply HELP for assistance"
 		when "registration_existing"
-			response = processor(email, subject)
+			response = processor(email, subject, sent)
 			subject = response["subject"]
 			body = response["body"]
 
@@ -116,14 +116,11 @@ class TextMailer < ActionMailer::Base
 	end
 
 	if single_response	# single response cases
-
-		puts "=> Single Response"
-
-		sender(email, subject, body)
+		sender(email, subject, body, sent)
 	else		# responses to multiple users
 		User.find_each do |user|
 			if user.cell!=email		# don't send msg to sender
-				sender(user.cell, subject, body)
+				sender(sent, user.cell, subject, body)
 			end
 		end
 		sender(email, "Sent #{User.count-1} msgs")
@@ -131,9 +128,24 @@ class TextMailer < ActionMailer::Base
   end
 
 # called to send text
-  def sender (email, subject="", body="", logo=false)
+  def sender (sent, email, subject="", body="", logo=false)
 	subject = "" if subject.nil?
 	body = "" if body.nil?
+
+	text = Text.find_by_sent(sent)
+	if text.nil?
+		user = User.find_by_cell(email)
+		Text.create do |t|	# create the user
+			t.sent = sent
+			t.user_id = user.id
+			t.subject = subject
+			t.body = body
+			t.settings["pings"]=1	# keep track of times used
+		end
+	else
+		puts "=> Duplicate Text"
+	end
+
 	if email.include? 'att'	# handle at&t (use 41 char CHUNKS in subject, no body)
 		if (subject+body).length<39	# can it fit in subject?
 			UserMailer.general(email, subject+" / "+body).deliver
@@ -146,10 +158,11 @@ class TextMailer < ActionMailer::Base
 	else
 		UserMailer.general(email, subject, body).deliver unless email.nil?
 	end
+
   end
 
 # called when processing user request
-  def processor(email, subject)
+  def processor(email, subject, sent)
 
 	sub = subject.split[0...1][0].upcase	unless subject.nil?   # get first word from subject
 	response = {}
