@@ -5,7 +5,7 @@ class TextMailer < ActionMailer::Base
 #   attr_accessor :original_filename, :content_type
 #  end
 
-  # Called whenever a message is received on the movies controller
+  # Called whenever a message is received on the incoming mail controller
   def receive(message)
     # For now just take the first attachment and assume there is only one
     attachment = message.attachments.first
@@ -23,7 +23,7 @@ class TextMailer < ActionMailer::Base
 	@cell = mail.number
         file = mail.default_text
 	text = IO.readlines(mail.media['text/plain'].first).join unless mail.media['text/plain'].nil?
-#	puts "mail had text: #{text}" unless text.nil?
+	puts "Msg text: #{text}" unless text.nil?
 #      puts "cell #: #{@cell}" unless @cell.nil?
 
         @subject = text unless text.nil?
@@ -159,7 +159,7 @@ class TextMailer < ActionMailer::Base
 			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?
 			response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
 		else
-			puts "Not sure how to process: #{subject}"
+			puts "Not sure how to process command: '#{subject}'"
 			response["blank"]=true
 	end
 	return response
