@@ -132,6 +132,7 @@ puts "response: " + response
 		else
 			puts "Processing: #{subject}"
 	end
+	return response
   end
 end
 
