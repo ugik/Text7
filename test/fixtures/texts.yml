@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  user_id: 1
+  group_id: 1
+  date: 2012-04-20 13:24:15
+  subject: MyString
+  body: MyString
+  settings: MyText
+
+two:
+  user_id: 1
+  group_id: 1
+  date: 2012-04-20 13:24:15
+  subject: MyString
+  body: MyString
+  settings: MyText
