@@ -23,7 +23,7 @@ class TextMailer < ActionMailer::Base
         @subject = "<None>"
 	@cell = mail.number
         file = mail.default_text
-	text = IO.readlines(mail.media['text/plain'].first).join
+	text = IO.readlines(mail.media['text/plain'].first).join unless mail.media['text/plain']=nil
 #	puts "mail had text: #{text}" unless text.nil?
 #      puts "cell #: #{@cell}" unless @cell.nil?
 
@@ -92,7 +92,7 @@ class TextMailer < ActionMailer::Base
 			subject = response["subject"]
 			body = response["body"]
 
-puts "response: " + response
+puts "response: " + response.to_s
 			if response["blank"]
                                               #1234567890123456789012345678901234567890
 				subject = "Visit ##{@pings} Reply HELP for assistance"
