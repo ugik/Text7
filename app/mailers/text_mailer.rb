@@ -121,15 +121,15 @@ class TextMailer < ActionMailer::Base
 				puts "Sent msg to #{user.email}"
 			end
 		end
-		sender(email, "Sent #{User.count-1} msgs"
+		sender(email, "Sent #{User.count-1} msgs")
 	end
   end
 
 # called to send text
   def sender (email, subject, body=nil, logo=false)
 	if email.include? 'att'	# handle at&t (use 41 char CHUNKS in subject, no body)
-		if (subject.body).length<41	# can it fit in subject?
-			UserMailer.general(email, subject+"/"+body).deliver
+		if (subject.body).length<39	# can it fit in subject?
+			UserMailer.general(email, subject+" / "+body).deliver
 		else
 			UserMailer.general(email, subject).deliver
 			UserMailer.general(email, body[0..40]).deliver if body.length>0
