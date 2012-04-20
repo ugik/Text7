@@ -13,8 +13,6 @@ class TextMailer < ActionMailer::Base
     puts "**************************"
 #    puts "Inspect:"+ message.inspect
     puts "Date: "+ message.date.to_s
-    puts "    ID: " + message.id
-#    puts "    ID:" + message.message-ID.to_s
 
     if message.body.decoded.include? 'confirmation code'	# handle email forwarding verification
 #        puts message.body.decoded
