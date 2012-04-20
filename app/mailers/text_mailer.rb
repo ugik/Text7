@@ -129,6 +129,8 @@ class TextMailer < ActionMailer::Base
 
 # called to send text
   def sender (email, subject="", body="", logo=false)
+	subject = "" if subject.nil?
+	body = "" if body.nil?
 	if email.include? 'att'	# handle at&t (use 41 char CHUNKS in subject, no body)
 		if (subject+body).length<39	# can it fit in subject?
 			UserMailer.general(email, subject+" / "+body).deliver
@@ -154,7 +156,7 @@ class TextMailer < ActionMailer::Base
 			response["subject"]="Hello, thanks for texting."
 		when "HELP"
                                                    #1234567890123456789012345678901234567890123456789
-			response["body"]="HELP | HELLO | ALL {msg}"
+			response["subject"]="HELP | HELLO | ALL {msg}"
 #			response["subject"]="HELP | CREATE {group} |  JOIN {group}"
 #			response["body"]="MSG {group} | LEAVE {group} | DELETE {group}"
 		when "ALL"
