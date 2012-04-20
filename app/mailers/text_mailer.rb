@@ -136,7 +136,7 @@ class TextMailer < ActionMailer::Base
 #			response["body"]="MSG {group} | LEAVE {group} | DELETE {group}"
 		when "ALL"
 			response["all"]=true
-			response["subject"]=email
+			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?
 			response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
 		else
 			puts "Not sure how to process: #{subject}"
