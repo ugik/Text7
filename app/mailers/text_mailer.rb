@@ -92,6 +92,7 @@ class TextMailer < ActionMailer::Base
 			subject = response["subject"]
 			body = response["body"]
 
+puts "response: " + response
 			if response["blank"]
                                               #1234567890123456789012345678901234567890
 				subject = "Visit ##{@pings} Reply HELP for assistance"
