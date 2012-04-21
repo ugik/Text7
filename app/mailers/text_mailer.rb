@@ -42,25 +42,8 @@ class TextMailer < ActionMailer::Base
 		@email.gsub!('txt','mms')
 	end
 
-	duplicate = persist_text(message.date, @email, @subject)
-	if !duplicate
-		@user = User.find_by_cell(@email)
-		if @user.nil?
-			User.create do |user|	# create the user
-				user.cell = @email
-				user.settings["pings"]=1	# keep track of times used
-			end
-			responder(@email, @subject, "registration_confirmation")
-		else
-			if @user.settings["pings"].nil?
-				@user.settings["pings"]=1
-			else
-				@user.settings["pings"]+=1
-			end
-			@user.save
-			responder(@email, @subject, "registration_existing")
-		end
-	end
+	persist_text(message.date, @email, @subject)	# Create/Update User and Text
+
     else
 	@subject = message.subject
 
@@ -177,10 +160,26 @@ class TextMailer < ActionMailer::Base
 
 # called to persist inbound messages
   def persist_text(sent, email, subject)
-	deplicate = false
-	user = User.find_by_cell(email)
+	new_user = false
+	duplicate = false
 
-        text = Text.find(:first, :conditions => { :sent => sent, :user_id => user.id })
+	user = User.find_by_cell(email)
+	if user.nil?
+		User.create do |user|	# create the user
+			user.cell = email
+			user.settings["pings"]=1	# keep track of times used
+		end
+		new_user = true
+	else
+		if user.settings["pings"].nil?
+			user.settings["pings"]=1
+		else
+			user.settings["pings"]+=1
+		end
+		user.save
+	end
+
+        text = Text.find(:first, :conditions => { :sent => sent, :user_id => user.id }) unless user.nil?
 	if text.nil?
 		Text.create do |t|	# create the user
 			t.sent = sent
@@ -196,11 +195,16 @@ class TextMailer < ActionMailer::Base
 			text.settings["pings"]+=1
 		end
 		text.save
-
 		duplicate = true
 	end
 
-	return duplicate
+	if !duplicate
+		if new_user
+			responder(email, subject, "registration_confirmation")
+		else
+			responder(email, subject, "registration_existing")
+		end
+	end
   end
 
 end
