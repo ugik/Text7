@@ -106,7 +106,7 @@ class TextMailer < ActionMailer::Base
 	else		# responses to multiple users
 		User.find_each do |user|
 			if user.cell!=email		# don't send msg to sender
-				sender(sent, user.cell, subject, body)
+				sender(user.cell, subject, body)
 			end
 		end
 		sender(email, "Sent #{User.count-1} msgs")
