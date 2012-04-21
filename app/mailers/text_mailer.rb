@@ -178,9 +178,10 @@ class TextMailer < ActionMailer::Base
 # called to persist inbound messages
   def persist_text(sent, email, subject)
 	deplicate = false
-	text = Text.find_by_sent(sent)
+	user = User.find_by_cell(email)
+
+        text = Text.find(:first, :conditions => { :sent => sent, :user_id => user.id })
 	if text.nil?
-		user = User.find_by_cell(email)
 		Text.create do |t|	# create the user
 			t.sent = sent
 			t.user_id = user.id
@@ -188,7 +189,14 @@ class TextMailer < ActionMailer::Base
 			t.settings["pings"]=1	# keep track of times used
 		end
 	else
-		puts "=> Duplicate Text"
+		puts "=> Duplicate Text"		# no 2 inbound texts with same datetime + user
+		if text.settings["pings"].nil?
+			text.settings["pings"]=1
+		else
+			text.settings["pings"]+=1
+		end
+		text.save
+
 		duplicate = true
 	end
 
