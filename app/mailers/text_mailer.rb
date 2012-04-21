@@ -179,6 +179,7 @@ class TextMailer < ActionMailer::Base
 		user.save
 	end
 
+	user = User.find_by_cell(email)
         text = Text.find(:first, :conditions => { :sent => sent, :user_id => user.id }) unless user.nil?
 	if text.nil?
 		Text.create do |t|	# create the user
