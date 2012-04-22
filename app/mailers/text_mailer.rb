@@ -103,7 +103,7 @@ class TextMailer < ActionMailer::Base
 				if valid
 					user.settings["alias"]=user_alias
 					user.save
-					subject = "Alias #{alias} is set"
+					subject = "Alias #{user_alias} is set"
 					body = ""
 				else
 					subject = "Alias must be 5 letters/numbers"
