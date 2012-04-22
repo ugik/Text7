@@ -95,7 +95,7 @@ class TextMailer < ActionMailer::Base
 				# check if alias is 5 alphanumeric chars
 				alias-valid = false
 				alias = response["alias"]
-				if alias.size=5 and alias.scan(/[a-z0-9#]+/i).size=1    # is alphanumeric
+				if (alias.size=5 and alias.scan(/[a-z0-9#]+/i).size=1)    # is alphanumeric
 					if alias.scan(/[a-z0-9#]+/i)[0].size=5	# and still 5 in length
 						alias-value = true
 					end
