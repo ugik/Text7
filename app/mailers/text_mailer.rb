@@ -123,10 +123,10 @@ class TextMailer < ActionMailer::Base
 					end
 				end
 				if make_valid
-					group = Group.find_by_name(user_make)
+					group = Group.find_by_name(user_make.upcase)
 					if group.nil?
 						Group.create do |group|	# create the user
-							group.name = user_make
+							group.name = user_make.upcase
 						end
 						group = Group.find_by_name(user_make)
 						if !group.nil?
@@ -150,7 +150,7 @@ class TextMailer < ActionMailer::Base
 
 			if !response["drop"].nil?
 				user_drop=response["drop"]
-				group = Group.find_by_name(user_drop)
+				group = Group.find_by_name(user_drop.upcase)
 				if group.nil?
 					subject = "Group #{user_drop} doesn't exist"
 					body = ""
