@@ -112,6 +112,41 @@ class TextMailer < ActionMailer::Base
 				end
 			end
 
+			if !response["make"].nil?
+				# check if make name is 2-5 alphanumeric chars
+				make_valid = false
+				user_make = response["make"]
+				if (user_make.size.between?(2,5) and 
+                                    user_make.scan(/[a-z0-9#]+/i).length==1)
+					if user_make.scan(/[a-z0-9#]+/i)[0].size.between?(2,5)
+						make_valid = true
+					end
+				end
+				if make_valid
+					group = Group.find_by_name(user_make)
+					if group.nil?
+						Group.create do |group|	# create the user
+							group.name = user_make
+						end
+						group = Group.find_by_name(user_make)
+						if group.nil?
+							Usergroup.create do |usergroup|		# create the usergroup
+								usergroup.user_id = user.id
+								usergroup.group_id = group.id
+							end
+						end
+						subject = "Group #{user_make} created"
+						body = ""
+					else
+						subject = "Group #{user_make} already exists"
+						body = ""
+					end
+				else
+					subject = "Group must be 2-5 letters/numbers"
+					body = ""
+				end
+			end
+
 		when "registration_email_denial"
 			subject = "To register:"
 			body = "Please Text(sms) to: u@Text7.com"
