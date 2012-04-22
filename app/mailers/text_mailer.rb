@@ -181,7 +181,7 @@ class TextMailer < ActionMailer::Base
 			puts "Responder Type #{type} ?"
 	end
 
-	if (subject+body).length>1
+	if (subject.to_s+body.to_s).length>1
 		if single_response	# single response cases
 			sender(email, subject, body)
 		else		# responses to multiple users
