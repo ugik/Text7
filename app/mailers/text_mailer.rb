@@ -171,6 +171,7 @@ class TextMailer < ActionMailer::Base
 			response["all"]=true
 			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?
 			response["subject"]=user.settings["alias"] unless user.settings["alias"].nil?
+puts "ALIAS #{user.settings["alias"]}" unless user.settings["alias"].nil?
 			response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
 		else
 			puts "Not sure how to process command: '#{subject}'"
