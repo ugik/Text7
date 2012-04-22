@@ -128,7 +128,7 @@ class TextMailer < ActionMailer::Base
 						Group.create do |group|	# create the user
 							group.name = user_make.upcase
 						end
-						group = Group.find_by_name(user_make)
+						group = Group.find_by_name(user_make.upcase)
 						if !group.nil?
 							Usergroup.create do |usergroup|		# create the usergroup
 								usergroup.user_id = user.id
