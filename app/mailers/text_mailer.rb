@@ -156,10 +156,12 @@ class TextMailer < ActionMailer::Base
 					body = ""
 				else
 				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
-puts "DROPPING GROUP user_id: #{user.id}, group_id: #{group.id}"
+					puts "DROPPING GROUP user_id: #{user.id}, group_id: #{group.id}"
 					if !ug.nil?
 						if ug.owner
-							subject = "Group #{user_make} dropped"
+							group.delete
+							ug.delete
+							subject = "Group #{user_drop} dropped"
 							body = ""
 						else
 							subject ="You are not the owner of this group"
