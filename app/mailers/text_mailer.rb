@@ -66,7 +66,7 @@ class TextMailer < ActionMailer::Base
   end
 
 # called when ready to respond to user
-  def responder(email, subject, type="general")
+  def responder(email, subject, type="response")
 
 	user = User.find_by_cell(email)
 	pings = user.settings["pings"] unless user.nil?
@@ -77,7 +77,7 @@ class TextMailer < ActionMailer::Base
 		when "registration_confirmation"
 			subject = "You are now registered, welcome."
 			body = "Reply HELP for assistance"
-		when "registration_existing"
+		when "process_existing"
 			response = processor(email, subject)
 			subject = response["subject"]
 			body = response["body"]
@@ -89,6 +89,13 @@ class TextMailer < ActionMailer::Base
 
 			if response["all"]
 				single_response = false
+			end
+
+			if !response["alias"].nil?
+				user.settings["alias"]=response["alias"]
+				user.save
+				subject = "Alias #{response["alias"]} is set"
+				body = ""
 			end
 
 		when "registration_email_denial"
@@ -109,7 +116,7 @@ class TextMailer < ActionMailer::Base
 				sender(user.cell, subject, body)
 			end
 		end
-		sender(email, "Sent #{User.count-1} msgs")
+		sender(email, "Sent #{User.count-1} msgs")	# echo back number of msgs sent
 	end
   end
 
@@ -136,20 +143,26 @@ class TextMailer < ActionMailer::Base
 # called when processing user request
   def processor(email, subject)
 
+	user = User.find_by_cell(email)
+
 	sub = subject.split[0...1][0].upcase	unless subject.nil?   # get first word from subject
 	response = {}
 	case sub
 		when "HELLO"
                                                    #1234567890123456789012345678901234567890123456789
-			response["subject"]="Hello, thanks for texting."
+			replies=["Hello, thanks for texting", "Hi, thanks for using Text7", "Check out www.Text7.com", "Let your friends know about Text7", "Remember to text HELP for assistance", "What's up?", "How you doing'?", "Text7 is #1 in group texting!", "See you again soon.", "Thanks for using Text7"]
+			response["subject"]=replies[rand(replies.length)]
 		when "HELP"
                                                    #1234567890123456789012345678901234567890123456789
-			response["subject"]="HELP | HELLO | ALL {msg}"
+			response["subject"]="HELP | HELLO | ALL {msg} | ALIAS {alias}"
 #			response["subject"]="HELP | CREATE {group} |  JOIN {group}"
 #			response["body"]="MSG {group} | LEAVE {group} | DELETE {group}"
+		when "ALIAS"
+			response["alias"]=subject.split[1...2][0].upcase unless subject.nil?	# get alias
 		when "ALL"
 			response["all"]=true
 			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?
+			response["subject"]=user.settings["alias"] unless user.settings["alias"].nil?
 			response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
 		else
 			puts "Not sure how to process command: '#{subject}'"
@@ -203,7 +216,7 @@ class TextMailer < ActionMailer::Base
 		if new_user
 			responder(email, subject, "registration_confirmation")
 		else
-			responder(email, subject, "registration_existing")
+			responder(email, subject, "process_existing")
 		end
 	end
   end
