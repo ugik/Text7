@@ -1,15 +1,26 @@
 ActionMailer::Base.delivery_method = :smtp
 
-# SendGrid
+
+# Mailgun
 ActionMailer::Base.smtp_settings = {
-	:address		=> "smtp.sendgrid.net",
-	:port		=> 587,
-	:domain		=> "text7.com",
-	:user_name	=> "app4057330@heroku.com",
-	:password	=> ENV["SENDGRID_PASSWORD"],
-	:authentication => "plain",
-	:enable_starttls_auto => true
+    :authentication => :plain,
+    :address => "smtp.mailgun.org",
+    :port => 25,
+    :domain => "app4057330.mailgun.org ",
+    :user_name => "postmaster@app4057330.mailgun.org ",
+    :password => "cassimere"
 }
+
+# SendGrid
+#ActionMailer::Base.smtp_settings = {
+#	:address		=> "smtp.sendgrid.net",
+#	:port		=> 587,
+#	:domain		=> "text7.com",
+#	:user_name	=> "app4057330@heroku.com",
+#	:password	=> ENV["SENDGRID_PASSWORD"],
+#	:authentication => "plain",
+#	:enable_starttls_auto => true
+#}
 
 # GoDaddy
 #ActionMailer::Base.smtp_settings = {
