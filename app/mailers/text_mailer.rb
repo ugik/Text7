@@ -148,6 +148,29 @@ class TextMailer < ActionMailer::Base
 				end
 			end
 
+			if !response["drop"].nil?
+				user_drop=response["drop"]
+				group = Group.find_by_name(user_drop)
+				if group.nil?
+					subject = "Group #{user_drop} doesn't exist"
+					body = ""
+				else
+				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => user.id }) unless user.nil?
+					if !ug.nil?
+						if ug.owner
+							subject = "Group #{user_make} dropped"
+							body = ""
+						else
+							subject ="You are not the owner of this group"
+							body = ""
+						end
+				end
+			else
+				subject = "Group must be 2-5 letters/numbers"
+				body = ""
+			end
+		end
+
 		when "registration_email_denial"
 			subject = "To register:"
 			body = "Please Text(sms) to: u@Text7.com"
@@ -203,10 +226,10 @@ class TextMailer < ActionMailer::Base
 			replies=["Hello, thanks for texting", "Hi, thanks for using Text7", "Check out www.Text7.com", "Let your friends know about Text7", "Remember to text HELP for assistance", "What's up?", "How you doing'?", "Text7 is #1 in group texting!", "See you again soon.", "Thanks for using Text7"]
 			response["subject"]=replies[rand(replies.length)]
 		when "HELP"
-                                                   #1234567890123456789012345678901234567890123456789
+                                                       #1234567890123456789012345678901234567890123456789
 			response["subject"]="HELP | HELLO | ALL {msg} | ALIAS {alias}"
-#			response["subject"]="HELP | CREATE {group} |  JOIN {group}"
-#			response["body"]="MSG {group} | LEAVE {group} | DELETE {group}"
+			response["body"]=   "MAKE {group} | DROP {group} | JOIN {group}"
+
 		when "ALIAS"
 			if subject.split[1...2][0].nil?	# handle ALIAS with no 2nd parameter
 				if user.settings["alias"].nil?
@@ -217,12 +240,21 @@ class TextMailer < ActionMailer::Base
 			else
 				response["alias"]=subject.split[1...2][0] unless subject.nil?	# get alias
 			end
+
 		when "MAKE"
 			if subject.split[1...2][0].nil?	# handle MAKE with no 2nd parameter
 				response["subject"]="Text MAKE {name} to create group"
 			else
 				response["make"]=subject.split[1...2][0] unless subject.nil?	# get make group name
 			end
+
+		when "DROP"
+			if subject.split[1...2][0].nil?	# handle MAKE with no 2nd parameter
+				response["subject"]="Text DROP {name} to delete group you made"
+			else
+				response["drop"]=subject.split[1...2][0] unless subject.nil?	# get drop group name
+			end
+
 		when "ALL"
 			response["all"]=true
 			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?
