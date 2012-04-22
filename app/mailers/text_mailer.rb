@@ -178,7 +178,7 @@ class TextMailer < ActionMailer::Base
 					response["subject"]="Your alias is #{user.settings["alias"]}"
 				end
 			else
-				response["alias"]=subject.split[1...2][0].upcase unless subject.nil?	# get alias
+				response["alias"]=subject.split[1...2][0] unless subject.nil?	# get alias
 			end
 		when "ALL"
 			response["all"]=true
