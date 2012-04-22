@@ -166,7 +166,7 @@ class TextMailer < ActionMailer::Base
 						body = ""
 					end
 				else
-					subject = "Group {#user_join} doesn't exist"
+					subject = "Group #{user_join} doesn't exist"
 					body = ""
 				end
 			end
