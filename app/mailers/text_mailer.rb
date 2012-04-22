@@ -95,7 +95,7 @@ class TextMailer < ActionMailer::Base
 				# check if alias is 5 alphanumeric chars
 				alias_valid = false
 				user_alias = response["alias"]
-				if user_alias.size=5 and user_alias.scan(/[a-z0-9#]+/i).size=1    # is alphanumeric
+				if (user_alias.size=5 and user_alias.scan(/[a-z0-9#]+/i).size=1)    # is alphanumeric
 					if user_alias.scan(/[a-z0-9#]+/i)[0].size=5	# and still 5 in length
 						alias_valid = true
 					end
@@ -184,7 +184,7 @@ class TextMailer < ActionMailer::Base
 			response["all"]=true
 			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?
 			response["subject"]=user.settings["alias"] unless user.settings["alias"].nil?
-			puts "ALIAS #{user.settings["alias"] unless user.settings["alias"].nil?
+			puts "ALIAS #{user.settings["alias"]}" unless user.settings["alias"].nil?
 			response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
 		else
 			puts "Not sure how to process command: '#{subject}'"
