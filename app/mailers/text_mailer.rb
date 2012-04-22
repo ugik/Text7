@@ -92,10 +92,23 @@ class TextMailer < ActionMailer::Base
 			end
 
 			if !response["alias"].nil?
-				user.settings["alias"]=response["alias"]
-				user.save
-				subject = "Alias #{response["alias"]} is set"
-				body = ""
+				# check if alias is 5 alphanumeric chars
+				alias-valid = false
+				alias = response["alias"]
+				if alias.size=5 and alias.scan(/[a-z0-9#]+/i).size=1    # is alphanumeric
+					if alias.scan(/[a-z0-9#]+/i)[0].size=5	# and still 5 in length
+						alias-value = true
+					end
+				end
+				if alias-valid
+					user.settings["alias"]=alias
+					user.save
+					subject = "Alias #{alias} is set"
+					body = ""
+				else
+					subject = "Alias must be 5 letters/numbers"
+					body = ""
+				end
 			end
 
 		when "registration_email_denial"
@@ -171,7 +184,7 @@ class TextMailer < ActionMailer::Base
 			response["all"]=true
 			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?
 			response["subject"]=user.settings["alias"] unless user.settings["alias"].nil?
-puts "ALIAS #{user.settings["alias"]}" unless user.settings["alias"].nil?
+			puts "ALIAS #{user.settings["alias"] unless user.settings["alias"].nil?
 			response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
 		else
 			puts "Not sure how to process command: '#{subject}'"
