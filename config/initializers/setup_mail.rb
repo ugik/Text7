@@ -5,7 +5,8 @@ ActionMailer::Base.smtp_settings = {
 	:domain		=> "text7.com",
 	:user_name	=> "u@text7.com",
 	:password	=> "cassimere",
-	:authentication => "plain"
+	:authentication => "plain",
+	:enable_starttls_auto => true
 }
 
 
