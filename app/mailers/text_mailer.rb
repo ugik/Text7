@@ -100,7 +100,7 @@ class TextMailer < ActionMailer::Base
 						alias_valid = true
 					end
 				end
-				if valid
+				if alias_valid
 					user.settings["alias"]=user_alias
 					user.save
 					subject = "Alias #{user_alias} is set"
