@@ -158,7 +158,15 @@ class TextMailer < ActionMailer::Base
 #			response["subject"]="HELP | CREATE {group} |  JOIN {group}"
 #			response["body"]="MSG {group} | LEAVE {group} | DELETE {group}"
 		when "ALIAS"
-			response["alias"]=subject.split[1...2][0].upcase unless subject.nil?	# get alias
+			if subject.split[1...2][0].nil?	# handle ALIAS with no 2nd parameter
+				if user.settings["alias"].nil?
+					response["subject"]="No alias, text ALIAS {alias} to set"
+				else
+					response["subject"]="Your alias is #{user.settings["alias"]}"
+				end
+			else
+				response["alias"]=subject.split[1...2][0].upcase unless subject.nil?	# get alias
+			end
 		when "ALL"
 			response["all"]=true
 			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?
