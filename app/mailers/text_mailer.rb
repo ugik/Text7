@@ -164,6 +164,7 @@ class TextMailer < ActionMailer::Base
 							subject ="You are not the owner of this group"
 							body = ""
 						end
+					end
 				end
 			else
 				subject = "Group must be 2-5 letters/numbers"
