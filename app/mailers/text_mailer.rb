@@ -129,10 +129,11 @@ class TextMailer < ActionMailer::Base
 							group.name = user_make
 						end
 						group = Group.find_by_name(user_make)
-						if group.nil?
+						if !group.nil?
 							Usergroup.create do |usergroup|		# create the usergroup
 								usergroup.user_id = user.id
 								usergroup.group_id = group.id
+								usergroup.owner = true	
 							end
 						end
 						subject = "Group #{user_make} created"
