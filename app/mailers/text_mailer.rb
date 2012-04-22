@@ -170,7 +170,6 @@ class TextMailer < ActionMailer::Base
 				subject = "Group must be 2-5 letters/numbers"
 				body = ""
 			end
-		end
 
 		when "registration_email_denial"
 			subject = "To register:"
