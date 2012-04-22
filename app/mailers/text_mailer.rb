@@ -155,7 +155,8 @@ class TextMailer < ActionMailer::Base
 					subject = "Group #{user_drop} doesn't exist"
 					body = ""
 				else
-				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => user.id }) unless user.nil?
+				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
+puts "DROPPING GROUP user_id: #{user.id}, group_id: #{group.id}"
 					if !ug.nil?
 						if ug.owner
 							subject = "Group #{user_make} dropped"
@@ -166,9 +167,6 @@ class TextMailer < ActionMailer::Base
 						end
 					end
 				end
-			else
-				subject = "Group must be 2-5 letters/numbers"
-				body = ""
 			end
 
 		when "registration_email_denial"
@@ -181,15 +179,17 @@ class TextMailer < ActionMailer::Base
 			puts "Responder Type #{type} ?"
 	end
 
-	if single_response	# single response cases
-		sender(email, subject, body)
-	else		# responses to multiple users
-		User.find_each do |user|
-			if user.cell!=email		# don't send msg to sender
-				sender(user.cell, subject, body)
+	if (subject+body).length>1
+		if single_response	# single response cases
+			sender(email, subject, body)
+		else		# responses to multiple users
+			User.find_each do |user|
+				if user.cell!=email		# don't send msg to sender
+					sender(user.cell, subject, body)
+				end
 			end
+			sender(email, "Sent #{User.count-1} msgs")	# echo back number of msgs sent
 		end
-		sender(email, "Sent #{User.count-1} msgs")	# echo back number of msgs sent
 	end
   end
 
