@@ -148,6 +148,29 @@ class TextMailer < ActionMailer::Base
 				end
 			end
 
+			if !response["join"].nil?
+				user_join = response["join"]
+				group = Group.find_by_name(user_join.upcase)
+				if !group.nil?
+				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
+					if ug.nil?
+						Usergroup.create do |usergroup|		# create the usergroup
+							usergroup.user_id = user.id
+							usergroup.group_id = group.id
+							usergroup.owner = false
+						end
+						subject = "You joined group #{user_join}"
+						body = ""
+					else
+						subject ="You are allready in group:#{user_join}"
+						body = ""
+					end
+				else
+					subject = "Group {#user_join} doesn't exist"
+					body = ""
+				end
+			end
+
 			if !response["drop"].nil?
 				user_drop=response["drop"]
 				group = Group.find_by_name(user_drop.upcase)
@@ -248,6 +271,13 @@ class TextMailer < ActionMailer::Base
 				response["subject"]="Text MAKE {name} to create group"
 			else
 				response["make"]=subject.split[1...2][0] unless subject.nil?	# get make group name
+			end
+
+		when "JOIN"
+			if subject.split[1...2][0].nil?	# handle JOIN with no 2nd parameter
+				response["subject"]="Text JOIN {name} to join group"
+			else
+				response["join"]=subject.split[1...2][0] unless subject.nil?	# get join group name
 			end
 
 		when "DROP"
