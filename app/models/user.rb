@@ -7,5 +7,6 @@ class User < ActiveRecord::Base
                     :uniqueness => { :case_sensitive => false }
 
   has_many :texts
+  has_many :usergroups
 
 end

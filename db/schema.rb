@@ -10,7 +10,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120420172415) do
+ActiveRecord::Schema.define(:version => 20120422043704) do
+
+  create_table "groups", :force => true do |t|
+    t.string   "name"
+    t.text     "settings"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "texts", :force => true do |t|
     t.integer  "user_id"
@@ -24,6 +31,15 @@ ActiveRecord::Schema.define(:version => 20120420172415) do
   end
 
   add_index "texts", ["sent"], :name => "index_texts_on_sent"
+
+  create_table "usergroups", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "group_id"
+    t.boolean  "owner"
+    t.text     "settings"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", :force => true do |t|
     t.string   "cell"

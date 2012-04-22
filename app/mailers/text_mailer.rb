@@ -92,11 +92,12 @@ class TextMailer < ActionMailer::Base
 			end
 
 			if !response["alias"].nil?
-				# check if alias is 5 alphanumeric chars
+				# check if alias is 2-5 alphanumeric chars
 				alias_valid = false
 				user_alias = response["alias"]
-				if (user_alias.size==5 and user_alias.scan(/[a-z0-9#]+/i).length==1)
-					if user_alias.scan(/[a-z0-9#]+/i)[0].size==5	# and still 5 in length
+				if (user_alias.size.between?(2,5) and 
+                                    user_alias.scan(/[a-z0-9#]+/i).length==1)
+					if user_alias.scan(/[a-z0-9#]+/i)[0].size.between?(2,5)
 						alias_valid = true
 					end
 				end
@@ -106,7 +107,7 @@ class TextMailer < ActionMailer::Base
 					subject = "Alias #{user_alias} is set"
 					body = ""
 				else
-					subject = "Alias must be 5 letters/numbers"
+					subject = "Alias must be 2-5 letters/numbers"
 					body = ""
 				end
 			end
@@ -179,6 +180,12 @@ class TextMailer < ActionMailer::Base
 				end
 			else
 				response["alias"]=subject.split[1...2][0] unless subject.nil?	# get alias
+			end
+		when "MAKE"
+			if subject.split[1...2][0].nil?	# handle MAKE with no 2nd parameter
+				response["subject"]="Text MAKE {name} to create group"
+			else
+				response["make"]=subject.split[1...2][0] unless subject.nil?	# get make group name
 			end
 		when "ALL"
 			response["all"]=true
