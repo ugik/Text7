@@ -28,6 +28,7 @@ class TextMailer < ActionMailer::Base
 	text = IO.readlines(mail.media['text/plain'].first).join unless mail.media['text/plain'].nil?
 	puts "Msg text: #{text}" unless text.nil?
         puts "cell #: #{@cell}" unless @cell.nil?
+	puts "alias: #{user.settings['alias']" unless user.settings["alias"].nil?
 
         @subject = text unless text.nil?
         file = mail.default_media
@@ -59,7 +60,7 @@ class TextMailer < ActionMailer::Base
 
     end
 
-    puts @email + " : " + @subject + " : " + message.date.to_s
+    puts @email + " : " + @subject
     puts "**************************"
 
     return true
@@ -159,6 +160,9 @@ class TextMailer < ActionMailer::Base
 							usergroup.group_id = group.id
 							usergroup.owner = false
 						end
+puts "= DEFAULT-GROUP: #{group_id}"
+						user.settings["defaut-group"]=group.id
+						user.save
 						subject = "You joined group #{user_join}"
 						body = ""
 					else
