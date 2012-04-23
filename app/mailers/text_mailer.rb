@@ -28,7 +28,7 @@ class TextMailer < ActionMailer::Base
 	text = IO.readlines(mail.media['text/plain'].first).join unless mail.media['text/plain'].nil?
 	puts "Msg text: #{text}" unless text.nil?
         puts "cell #: #{@cell}" unless @cell.nil?
-	puts "alias: #{user.settings['alias']}" unless user.settings["alias"].nil?
+#	puts "alias: #{user.settings['alias']}" unless user.settings["alias"].nil?
 
         @subject = text unless text.nil?
         file = mail.default_media
