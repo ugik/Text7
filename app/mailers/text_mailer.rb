@@ -60,7 +60,7 @@ class TextMailer < ActionMailer::Base
 
     end
 
-    puts @email + " : " + @subject
+    puts @email + " : " + @subject.to_s
     puts "**************************"
 
     return true
