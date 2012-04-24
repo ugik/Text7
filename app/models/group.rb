@@ -7,5 +7,7 @@ class Group < ActiveRecord::Base
                     :uniqueness => { :case_sensitive => false }
 
   has_many :texts
-  has_many :usergroups
+  has_many :usergroups, :dependent => :destroy
+
 end
+

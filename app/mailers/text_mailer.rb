@@ -147,6 +147,7 @@ class TextMailer < ActionMailer::Base
 								user.settings["default-group"]=group.id
 								user.save
 							end
+puts "#{user_make} created"
 							subject = "#{user_make} created, friends can text"
 							body = "JOIN #{user_name} to u@text7.com"
 						else
@@ -233,7 +234,6 @@ class TextMailer < ActionMailer::Base
 					if !ug.nil?
 						if ug.owner
 							group.delete
-							ug.delete
 							subject = "Group #{user_drop} dropped"
 							body = ""
 						else
