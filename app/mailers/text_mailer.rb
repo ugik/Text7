@@ -233,7 +233,7 @@ puts "#{user_make} created"
 					puts "DROPPING GROUP user_id: #{user.id}, group_id: #{group.id}"
 					if !ug.nil?
 						if ug.owner
-							group.delete
+							group.destroy
 							subject = "Group #{user_drop} dropped"
 							body = ""
 						else
