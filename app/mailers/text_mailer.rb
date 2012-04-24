@@ -320,8 +320,8 @@ class TextMailer < ActionMailer::Base
 			response["subject"]=replies[rand(replies.length)]
 		when "HELP"
                                                        #1234567890123456789012345678901234567890123456789
-			response["subject"]="HELP | HELLO | ALL <msg> | ALIAS <name>"
-			response["body"]=   "MAKE <group> | DROP <group> | JOIN <group>"
+			response["subject"]="HELP | ALIAS name | MAKE GROUP"
+			response["body"]=   "MAKE group | DROP group | JOIN group"
 
 		when "ALIAS"
 			if subject.split[1...2][0].nil?	# handle ALIAS with no 2nd parameter
