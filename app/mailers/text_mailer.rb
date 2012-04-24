@@ -192,6 +192,8 @@ puts "= DEFAULT-GROUP: #{group.id}"
 			if !response["group"].nil?
 				user_group = response["group"]
 				if user_group == "default"
+					user_group = user.settings["defaut-group"]
+					user_group ||= "(default)"
 					subject = "You are texting in group #{user_group}"
 					body = ""
 				else
