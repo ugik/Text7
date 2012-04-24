@@ -149,7 +149,7 @@ class TextMailer < ActionMailer::Base
 							end
 puts "#{user_make} created"
 							subject = "#{user_make} created, friends can text"
-							body = "JOIN #{user_name} to u@text7.com"
+							body = "JOIN #{user_make} to u@text7.com"
 						else
 							if user.settings["default-group"]==group.id
 								subject = "You are texting to this group already"
