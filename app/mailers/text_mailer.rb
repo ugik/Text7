@@ -269,8 +269,8 @@ class TextMailer < ActionMailer::Base
 				end
 				count = User.count-1
 			else		# response to group
-				default-group = user.settings["defaut-group"]
-				group = Group.find_by_id(default-group)
+				default_group = user.settings["defaut-group"]
+				group = Group.find_by_id(default_group)
 				users = Usergroup.find_by_group_id(group.id)
 				users.each do |user|
 					if user.cell!=email		# don't send msg to sender
