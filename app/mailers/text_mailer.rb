@@ -21,6 +21,7 @@ class TextMailer < ActionMailer::Base
     mail = MMS2R::Media.new(message)        # process mail to handle MMS if sent from phone
 
     email = message.from[0].to_s	# first address in array
+
     if mail.is_mobile?
         subject = "<None>"
 	cell = mail.number
@@ -148,8 +149,8 @@ class TextMailer < ActionMailer::Base
 								user.save
 							end
 puts "#{user_make} created"
-							subject = "#{user_make} created, friends can text"
-							body = "JOIN #{user_make} to u@text7.com"
+							subject = "#{user_make} created"
+							body = "others can text: JOIN #{user_make}"
 						else
 							if user.settings["default-group"]==group.id
 								subject = "You are texting to this group already"
@@ -237,9 +238,17 @@ puts "#{user_make} created"
 							subject = "Group #{user_drop} dropped"
 							body = ""
 						else
-							subject ="You are not the owner of this group"
+							ug.delete
+							subject ="You are no longer in group #{user_drop}"
 							body = ""
 						end
+					end
+				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id }) unless user.nil?
+					if !ug.nil? and !ug.group.nil?
+						body = "No texting in group #{ug.group.name}"
+					else
+						subject ="You are no longer in a group"
+						body = "Text MAKE GROUP to create new one"
 					end
 				end
 			end
