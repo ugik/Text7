@@ -273,8 +273,8 @@ class TextMailer < ActionMailer::Base
 				default_group = user.settings["defaut-group"]
 				if !default_group.nil?
 					group = Group.find_by_id(default_group)
-					users = Usergroup.find_by_group_id(group.id)
-					users.each do |user|
+					@users = Usergroup.find_all_by_group_id(group.id)
+					@users.each do |user|
 						if user.cell!=email		# don't send msg to sender
 							sender(user.cell, subject, body)
 						end
