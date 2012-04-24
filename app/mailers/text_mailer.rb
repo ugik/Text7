@@ -59,7 +59,7 @@ class TextMailer < ActionMailer::Base
 
     end
 
-    subject.nil ||= ""
+    subject ||= ""
     puts email + " : " + subject.to_s
     puts "**************************"
 
