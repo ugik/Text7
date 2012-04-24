@@ -276,11 +276,11 @@ class TextMailer < ActionMailer::Base
 					@usergroup = Usergroup.find_all_by_group_id(group.id)
 					@usergroup.each do |ug|
 						if ug.user.cell!=email		# don't send msg to sender
-							sender(user.cell, subject, body)
+							sender(ug.user.cell, subject, body)
 						end
 					end
 					count = @usergroup.count-1
-					sender(email, "#{count} msgs to #{group}")	# echo back number of msgs sent
+					sender(email, "#{count} msgs to #{group.name}")	# echo back number of msgs sent
 				end
 			end
 		end
@@ -378,7 +378,7 @@ class TextMailer < ActionMailer::Base
 				response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?	# last 4 digits of cell #
 				response["subject"]=user.settings["alias"] unless user.settings["alias"].nil?
 				puts "GROUP MSG, ALIAS #{user.settings["alias"]}" unless user.settings["alias"].nil?
-				response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
+				response["body"]=subject.split[0...99].join(' ')	# the msg with whitespaces trimmed
 			end
 	end
 	return response
