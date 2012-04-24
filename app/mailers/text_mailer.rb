@@ -82,6 +82,7 @@ class TextMailer < ActionMailer::Base
 			body = "Reply HELP for assistance"
 		when "process_existing"
 			response = processor(email, subject)
+
 			subject = response["subject"]
 			body = response["body"]
 
@@ -90,7 +91,7 @@ class TextMailer < ActionMailer::Base
 				body = ""
 			end
 
-			if response["all"]
+			if response["all"] or response["group-msg"]
 				single_response = false
 			end
 
@@ -143,12 +144,11 @@ class TextMailer < ActionMailer::Base
 									usergroup.group_id = group.id
 									usergroup.owner = true	
 								end
-puts "= DEFAULT-GROUP: #{group.id}"
 								user.settings["defaut-group"]=group.id
 								user.save
 							end
-							subject = "Group #{user_make} created"
-							body = ""
+							subject = "#{user_make} created, friends text"
+							body = "JOIN #{user_name} to u@text7.com"
 						else
 							if user.settings["defaut-group"]==group.id
 								subject = "You are texting to this group already"
@@ -179,7 +179,6 @@ puts "= DEFAULT-GROUP: #{group.id}"
 							usergroup.group_id = group.id
 							usergroup.owner = false
 						end
-puts "= DEFAULT-GROUP: #{group.id}"
 						user.settings["defaut-group"]=group.id
 						user.save
 						subject = "You joined group #{user_join}"
@@ -206,7 +205,7 @@ puts "= DEFAULT-GROUP: #{group.id}"
 					if !group.nil?
 					        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
 						if !ug.nil?
-	puts "= DEFAULT-GROUP: #{group.id}"
+							puts "= DEFAULT-GROUP: #{group.id}"
 							user.settings["defaut-group"]=group.id
 							user.save
 							subject = "Now texting to group #{user_group}"
@@ -257,18 +256,33 @@ puts "= DEFAULT-GROUP: #{group.id}"
 
 	if (subject.to_s+body.to_s).length>1
 		if single_response	# single response cases
+
 			sender(email, subject, body)
+
 		else		# responses to multiple users
-			User.find_each do |user|
-				if user.cell!=email		# don't send msg to sender
-					sender(user.cell, subject, body)
+			count = 0
+			if response["all"]	# response to all
+				User.find_each do |user|
+					if user.cell!=email		# don't send msg to sender
+						sender(user.cell, subject, body)
+					end
 				end
+				count = User.count-1
+			else		# response to group
+				default-group = user.settings["defaut-group"]
+				group = Group.find_by_id(default-group)
+				users = Usergroup.find_by_group_id(group.id)
+				users.each do |user|
+					if user.cell!=email		# don't send msg to sender
+						sender(user.cell, subject, body)
+					end
+				end
+				count = users.count-1
 			end
-			group = user.settings["defaut-group"]
 			if group.nil?
-				sender(email, "Sent #{User.count-1} msgs")	# echo back number of msgs sent
+				sender(email, "Sent #{count} msgs")	# echo back number of msgs sent
 			else
-				sender(email, "#{User.count-1} msgs to #{group}")	# echo back number of msgs sent
+				sender(email, "#{count} msgs to #{group}")	# echo back number of msgs sent
 			end
 		end
 	end
@@ -303,7 +317,6 @@ puts "= DEFAULT-GROUP: #{group.id}"
 	response = {}
 	case sub
 		when "HELLO"
-                                                   #1234567890123456789012345678901234567890123456789
 			replies=["Hello, thanks for texting", "Hi, thanks for using Text7", "Check out www.Text7.com", "Let your friends know about Text7", "Remember to text HELP for assistance", "What's up?", "How you doing'?", "Text7 is #1 in group texting!", "See you again soon.", "Thanks for using Text7"]
 			response["subject"]=replies[rand(replies.length)]
 		when "HELP"
@@ -357,8 +370,17 @@ puts "= DEFAULT-GROUP: #{group.id}"
 			puts "ALIAS #{user.settings["alias"]}" unless user.settings["alias"].nil?
 			response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
 		else
-			puts "Not sure how to process command: '#{subject}'"
-			response["blank"]=true
+			# handle non-command text
+			if user.settings["default-group"].nil?
+				puts "Not sure how to process command: '#{subject}'"
+				response["blank"]=true
+			else
+				response["group-msg"]=true
+				response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?	# last 4 digits of cell #
+				response["subject"]=user.settings["alias"] unless user.settings["alias"].nil?
+				puts "GROUP MSG, ALIAS #{user.settings["alias"]}" unless user.settings["alias"].nil?
+				response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
+			end
 	end
 	return response
   end
@@ -405,7 +427,8 @@ puts "= DEFAULT-GROUP: #{group.id}"
 	end
 
 	if !duplicate
-		if new_user
+		sub = subject.split[0...1][0].upcase	unless subject.nil? 		# get command
+		if new_user and sub!="JOIN"		# allow new registration to JOIN group
 			responder(email, subject, "registration_confirmation")
 		else
 			responder(email, subject, "process_existing")
