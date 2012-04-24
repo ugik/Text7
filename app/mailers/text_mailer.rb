@@ -144,13 +144,13 @@ class TextMailer < ActionMailer::Base
 									usergroup.group_id = group.id
 									usergroup.owner = true	
 								end
-								user.settings["defaut-group"]=group.id
+								user.settings["default-group"]=group.id
 								user.save
 							end
 							subject = "#{user_make} created, friends text"
 							body = "JOIN #{user_name} to u@text7.com"
 						else
-							if user.settings["defaut-group"]==group.id
+							if user.settings["default-group"]==group.id
 								subject = "You are texting to this group already"
 								body = "Text GROUP to see your texting group"
 							else
@@ -179,7 +179,7 @@ class TextMailer < ActionMailer::Base
 							usergroup.group_id = group.id
 							usergroup.owner = false
 						end
-						user.settings["defaut-group"]=group.id
+						user.settings["default-group"]=group.id
 						user.save
 						subject = "You joined group #{user_join}"
 						body = ""
@@ -196,7 +196,7 @@ class TextMailer < ActionMailer::Base
 			if !response["group"].nil?
 				user_group = response["group"]
 				if user_group == "default"
-					user_group = user.settings["defaut-group"]
+					user_group = user.settings["default-group"]
 					group = Group.find_by_id(user_group) unless user_group.nil?
 					subject = "You are texting in group #{group.name}" unless group.nil?
 					body = ""
@@ -206,7 +206,7 @@ class TextMailer < ActionMailer::Base
 					        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
 						if !ug.nil?
 							puts "= DEFAULT-GROUP: #{group.id}"
-							user.settings["defaut-group"]=group.id
+							user.settings["default-group"]=group.id
 							user.save
 							subject = "Now texting to group #{user_group}"
 							body = ""
@@ -270,7 +270,7 @@ class TextMailer < ActionMailer::Base
 				count = User.count-1
 				sender(email, "Sent #{count} msgs")	# echo back number of msgs sent
 			else		# response to group
-				default_group = user.settings["defaut-group"]
+				default_group = user.settings["default-group"]
 				if !default_group.nil?
 					group = Group.find_by_id(default_group)
 					@usergroup = Usergroup.find_all_by_group_id(group.id)
