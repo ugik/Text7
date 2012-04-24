@@ -279,7 +279,7 @@ class TextMailer < ActionMailer::Base
 							sender(user.cell, subject, body)
 						end
 					end
-					count = users.count-1
+					count = @usergroup.count-1
 					sender(email, "#{count} msgs to #{group}")	# echo back number of msgs sent
 				end
 			end
