@@ -190,23 +190,28 @@ puts "= DEFAULT-GROUP: #{group.id}"
 			end
 
 			if !response["group"].nil?
-				user_group = response["join"]
-				group = Group.find_by_name(user_group.upcase)
-				if !group.nil?
-				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
-					if !ug.nil?
-puts "= DEFAULT-GROUP: #{group.id}"
-						user.settings["defaut-group"]=group.id
-						user.save
-						subject = "Now texting to group #{user_group}"
-						body = ""
+				user_group = response["group"]
+				if user_group == "default"
+					subject = "You are texting in group #{user_group}"
+					body = ""
+				else
+					group = Group.find_by_name(user_group.upcase)
+					if !group.nil?
+					        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
+						if !ug.nil?
+	puts "= DEFAULT-GROUP: #{group.id}"
+							user.settings["defaut-group"]=group.id
+							user.save
+							subject = "Now texting to group #{user_group}"
+							body = ""
+						else
+							subject ="You are not in group:#{user_group}"
+							body = ""
+						end
 					else
-						subject ="You are not in group:#{user_group}"
+						subject = "Group #{user_group} doesn't exist"
 						body = ""
 					end
-				else
-					subject = "Group #{user_group} doesn't exist"
-					body = ""
 				end
 			end
 
