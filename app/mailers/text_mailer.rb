@@ -5,8 +5,6 @@ class TextMailer < ActionMailer::Base
 #   attr_accessor :original_filename, :content_type
 #  end
 
-  keyWords = ["HELLO", "ALIAS", "JOIN", "DROP", "MAKE", "GROUP"]
-
   # Called whenever a message is received on the incoming mail controller
   def receive(message)
     # For now just take the first attachment and assume there is only one
@@ -70,6 +68,8 @@ class TextMailer < ActionMailer::Base
 
 # called when ready to respond to user
   def responder(email, subject, type="response")
+
+	keyWords = ["HELLO", "ALIAS", "JOIN", "DROP", "MAKE", "GROUP"]
 
 	user = User.find_by_cell(email)
 	pings = user.settings["pings"] unless user.nil?
