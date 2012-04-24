@@ -268,21 +268,20 @@ class TextMailer < ActionMailer::Base
 					end
 				end
 				count = User.count-1
+				sender(email, "Sent #{count} msgs")	# echo back number of msgs sent
 			else		# response to group
 				default_group = user.settings["defaut-group"]
-				group = Group.find_by_id(default_group)
-				users = Usergroup.find_by_group_id(group.id)
-				users.each do |user|
-					if user.cell!=email		# don't send msg to sender
-						sender(user.cell, subject, body)
+				if !default_group.nil?
+					group = Group.find_by_id(default_group)
+					users = Usergroup.find_by_group_id(group.id)
+					users.each do |user|
+						if user.cell!=email		# don't send msg to sender
+							sender(user.cell, subject, body)
+						end
 					end
+					count = users.count-1
+					sender(email, "#{count} msgs to #{group}")	# echo back number of msgs sent
 				end
-				count = users.count-1
-			end
-			if group.nil?
-				sender(email, "Sent #{count} msgs")	# echo back number of msgs sent
-			else
-				sender(email, "#{count} msgs to #{group}")	# echo back number of msgs sent
 			end
 		end
 	end
