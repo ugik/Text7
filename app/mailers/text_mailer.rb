@@ -130,7 +130,7 @@ class TextMailer < ActionMailer::Base
 					end
 				end
 				if make_valid
-					if !keyWords.include? user_make	# check list of key words
+					if !keyWords.include? user_make.upcase	# check list of key words
 
 						group = Group.find_by_name(user_make.upcase)
 						if group.nil?
@@ -147,7 +147,7 @@ class TextMailer < ActionMailer::Base
 								user.settings["default-group"]=group.id
 								user.save
 							end
-							subject = "#{user_make} created, friends text"
+							subject = "#{user_make} created, friends can text"
 							body = "JOIN #{user_name} to u@text7.com"
 						else
 							if user.settings["default-group"]==group.id
