@@ -22,7 +22,7 @@ class TextMailer < ActionMailer::Base
 
     email = message.from[0].to_s	# first address in array
 
-    if mail.is_mobile?
+    if mail.is_mobile? or email == "ugikma@gmail.com"
         subject = "<None>"
 	cell = mail.number
         file = mail.default_text
