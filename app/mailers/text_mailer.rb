@@ -5,6 +5,8 @@ class TextMailer < ActionMailer::Base
 #   attr_accessor :original_filename, :content_type
 #  end
 
+  keyWords = ["HELLO", "ALIAS", "JOIN", "DROP", "MAKE", "GROUP"]
+
   # Called whenever a message is received on the incoming mail controller
   def receive(message)
     # For now just take the first attachment and assume there is only one
@@ -117,6 +119,9 @@ class TextMailer < ActionMailer::Base
 				# check if make name is 2-5 alphanumeric chars
 				make_valid = false
 				user_make = response["make"]
+				if user_make.upcase == "GROUP"	# make a default group name using last 4 digs of cell
+					user_make = email[email.index("@")-4,4] unless email.index("@").nil?
+				end
 				if (user_make.size.between?(2,5) and 
                                     user_make.scan(/[a-z0-9#]+/i).length==1)
 					if user_make.scan(/[a-z0-9#]+/i)[0].size.between?(2,5)
@@ -124,23 +129,32 @@ class TextMailer < ActionMailer::Base
 					end
 				end
 				if make_valid
-					group = Group.find_by_name(user_make.upcase)
-					if group.nil?
-						Group.create do |group|	# create the user
-							group.name = user_make.upcase
-						end
+					if !keyWords.include? user_make	# check list of key words
+
 						group = Group.find_by_name(user_make.upcase)
-						if !group.nil?
-							Usergroup.create do |usergroup|		# create the usergroup
-								usergroup.user_id = user.id
-								usergroup.group_id = group.id
-								usergroup.owner = true	
+						if group.nil?
+							Group.create do |group|	# create the user
+								group.name = user_make.upcase
 							end
+							group = Group.find_by_name(user_make.upcase)
+							if !group.nil?
+								Usergroup.create do |usergroup|		# create the usergroup
+									usergroup.user_id = user.id
+									usergroup.group_id = group.id
+									usergroup.owner = true	
+								end
+puts "= DEFAULT-GROUP: #{group_id}"
+								user.settings["defaut-group"]=group.id
+								user.save
+							end
+							subject = "Group #{user_make} created"
+							body = ""
+						else
+							subject = "Group #{user_make} already exists"
+							body = "Text MAKE <group> to create group"
 						end
-						subject = "Group #{user_make} created"
-						body = ""
 					else
-						subject = "Group #{user_make} already exists"
+						subject = "Group name cannot be a Text7 command"
 						body = ""
 					end
 				else
@@ -171,6 +185,27 @@ puts "= DEFAULT-GROUP: #{group_id}"
 					end
 				else
 					subject = "Group #{user_join} doesn't exist"
+					body = ""
+				end
+			end
+
+			if !response["group"].nil?
+				user_group = response["join"]
+				group = Group.find_by_name(user_group.upcase)
+				if !group.nil?
+				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
+					if !ug.nil?
+puts "= DEFAULT-GROUP: #{group_id}"
+						user.settings["defaut-group"]=group.id
+						user.save
+						subject = "Now texting to group #{user_group}"
+						body = ""
+					else
+						subject ="You are not in group:#{user_group}"
+						body = ""
+					end
+				else
+					subject = "Group #{user_group} doesn't exist"
 					body = ""
 				end
 			end
@@ -217,7 +252,12 @@ puts "= DEFAULT-GROUP: #{group_id}"
 					sender(user.cell, subject, body)
 				end
 			end
-			sender(email, "Sent #{User.count-1} msgs")	# echo back number of msgs sent
+			group = user.settings["defaut-group"]
+			if group.nil?
+				sender(email, "Sent #{User.count-1} msgs")	# echo back number of msgs sent
+			else
+				sender(email, "#{User.count-1} msgs to #{group}")	# echo back number of msgs sent
+			end
 		end
 	end
   end
@@ -256,8 +296,8 @@ puts "= DEFAULT-GROUP: #{group_id}"
 			response["subject"]=replies[rand(replies.length)]
 		when "HELP"
                                                        #1234567890123456789012345678901234567890123456789
-			response["subject"]="HELP | HELLO | ALL {msg} | ALIAS {alias}"
-			response["body"]=   "MAKE {group} | DROP {group} | JOIN {group}"
+			response["subject"]="HELP | HELLO | ALL <msg> | ALIAS <name>"
+			response["body"]=   "MAKE <group> | DROP <group> | JOIN <group>"
 
 		when "ALIAS"
 			if subject.split[1...2][0].nil?	# handle ALIAS with no 2nd parameter
@@ -291,9 +331,16 @@ puts "= DEFAULT-GROUP: #{group_id}"
 				response["drop"]=subject.split[1...2][0] unless subject.nil?	# get drop group name
 			end
 
+		when "GROUP"
+			if subject.split[1...2][0].nil?	# handle GROUP with no 2nd parameter
+				response["group"]="default"	# display current default group
+			else
+				response["group"]=subject.split[1...2][0] unless subject.nil?	# get  group name
+			end
+
 		when "ALL"
 			response["all"]=true
-			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?
+			response["subject"]=email[email.index("@")-4,4] unless email.index("@").nil?	# last 4 digits of cell #
 			response["subject"]=user.settings["alias"] unless user.settings["alias"].nil?
 			puts "ALIAS #{user.settings["alias"]}" unless user.settings["alias"].nil?
 			response["body"]=subject.split[1...99].join(' ')	# the msg with whitespaces trimmed
