@@ -245,7 +245,7 @@ puts "#{user_make} created"
 					end
 				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id }) unless user.nil?
 					if !ug.nil? and !ug.group.nil?
-						user.settings["default-group"]=ug.id
+						user.settings["default-group"]=ug.group_id
 						user.save
 						body = "Now texting in group #{ug.group.name}"
 					else
