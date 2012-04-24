@@ -143,7 +143,7 @@ class TextMailer < ActionMailer::Base
 									usergroup.group_id = group.id
 									usergroup.owner = true	
 								end
-puts "= DEFAULT-GROUP: #{group_id}"
+puts "= DEFAULT-GROUP: #{group.id}"
 								user.settings["defaut-group"]=group.id
 								user.save
 							end
@@ -174,7 +174,7 @@ puts "= DEFAULT-GROUP: #{group_id}"
 							usergroup.group_id = group.id
 							usergroup.owner = false
 						end
-puts "= DEFAULT-GROUP: #{group_id}"
+puts "= DEFAULT-GROUP: #{group.id}"
 						user.settings["defaut-group"]=group.id
 						user.save
 						subject = "You joined group #{user_join}"
@@ -195,7 +195,7 @@ puts "= DEFAULT-GROUP: #{group_id}"
 				if !group.nil?
 				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
 					if !ug.nil?
-puts "= DEFAULT-GROUP: #{group_id}"
+puts "= DEFAULT-GROUP: #{group.id}"
 						user.settings["defaut-group"]=group.id
 						user.save
 						subject = "Now texting to group #{user_group}"
