@@ -193,8 +193,8 @@ puts "= DEFAULT-GROUP: #{group.id}"
 				user_group = response["group"]
 				if user_group == "default"
 					user_group = user.settings["defaut-group"]
-					user_group ||= "(default)"
-					subject = "You are texting in group #{user_group}"
+					group = Group.find_by_id(user_group) unless user_group.nil?
+					subject = "You are texting in group #{group.name}" unless group.nil?
 					body = ""
 				else
 					group = Group.find_by_name(user_group.upcase)
