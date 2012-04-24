@@ -271,7 +271,9 @@ puts "#{user_make} created"
 		if single_response	# single response cases
 
 			sender(email, subject, body)
-
+                        if type == "registration_confirmation"
+				sender("georgek@gmail.com", "#{email} registered", "")
+			end
 		else		# responses to multiple users
 			count = 0
 			if response["all"]	# response to all
