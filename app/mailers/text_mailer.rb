@@ -150,8 +150,13 @@ puts "= DEFAULT-GROUP: #{group.id}"
 							subject = "Group #{user_make} created"
 							body = ""
 						else
-							subject = "Group #{user_make} already exists"
-							body = "Text MAKE <group> to create group"
+							if user.settings["defaut-group"]==group.id
+								subject = "You are texting to this group already"
+								body = "Text GROUP to see your texting group"
+							else
+								subject = "Group #{user_make} already exists"
+								body = "Text MAKE <group> to create group"
+							end
 						end
 					else
 						subject = "Group name cannot be a Text7 command"
