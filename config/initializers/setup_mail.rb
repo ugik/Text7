@@ -1,15 +1,23 @@
 ActionMailer::Base.delivery_method = :smtp
 
 
-# Mailgun
 ActionMailer::Base.smtp_settings = {
-    :authentication => :plain,
-    :address => "smtp.mailgun.org",
-    :port => 25,
-    :domain => "app4057330.mailgun.org ",
-    :user_name => "postmaster@app4057330.mailgun.org ",
-    :password => "cassimere"
-}
+      :address => "email-smtp.us-east-1.amazonaws.com",
+      :user_name => ENV["SES_USERNAME"],
+      :password => ENV["SES_PASSWORD"],
+      :authentication => :login,
+      :enable_starttls_auto => true
+  }
+
+# Mailgun
+#ActionMailer::Base.smtp_settings = {
+#    :authentication => :plain,
+#    :address => "smtp.mailgun.org",
+#    :port => 25,
+#    :domain => "app4057330.mailgun.org ",
+#    :user_name => "postmaster@app4057330.mailgun.org ",
+#    :password => "..."
+#}
 
 # SendGrid
 #ActionMailer::Base.smtp_settings = {
@@ -28,7 +36,7 @@ ActionMailer::Base.smtp_settings = {
 #	:port		=> 80,
 #	:domain		=> "text7.com",
 #	:user_name	=> "u@text7.com",
-#	:password	=> "cassimere",
+#	:password	=> "...",
 #	:authentication => "plain",
 #	:enable_starttls_auto => true
 #}
@@ -39,7 +47,7 @@ ActionMailer::Base.smtp_settings = {
 #	:port		=> 587,
 #	:domain		=> "gmail.com",
 #	:user_name	=> "ugikma",
-#	:password	=> "cassimere",
+#	:password	=> "...",
 #	:authentication => "plain",
 #	:enable_starttls_auto => true
 #}
