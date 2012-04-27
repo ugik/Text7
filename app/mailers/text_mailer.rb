@@ -289,7 +289,12 @@ class TextMailer < ActionMailer::Base
 				explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
  				if !explicit_group.nil? and explicit_group!="u"
 					puts "Explicit group: #{explicit_group}"
-					default_group = Group.find_by_name(explicit_group.upcase).id
+					grp  = Group.find_by_name(explicit_group.upcase)
+					if !grp.nil?
+						default_group = grp.id
+					else
+						sender(email, "No group named #{group.name}", to_address) 
+					end
 				else
 					default_group = user.settings["default-group"]
 				end
