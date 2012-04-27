@@ -21,8 +21,7 @@ class TextMailer < ActionMailer::Base
     mail = MMS2R::Media.new(message)        # process mail to handle MMS if sent from phone
 
     email = message.from[0].to_s	# first address in array
-
-    puts message.to.inspect
+    to_address = message.to[0].to_s   # explicitly named to address (not u@...)
 
     if mail.is_mobile? or email == "ugikma@gmail.com"
         subject = "<None>"
@@ -45,7 +44,7 @@ class TextMailer < ActionMailer::Base
 		email.gsub!('txt','mms')
 	end
 
-	persist_text(message.date, email, subject)	# Create/Update User and Text
+	persist_text(message.date, email, to_address, subject)	# Create/Update User and Text
 
     else
 	subject = message.subject
@@ -58,7 +57,7 @@ class TextMailer < ActionMailer::Base
 #        	avatar_file.original_filename = attachment.filename
 #       	avatar_file.content_type = attachment.mime_type
 	end
-	responder(email, subject, "registration_email_denial")
+	responder(email, subject, to_address, "registration_email_denial")
 
     end
 
@@ -70,7 +69,7 @@ class TextMailer < ActionMailer::Base
   end
 
 # called when ready to respond to user
-  def responder(email, subject, type="response")
+  def responder(email, subject, to_address, type="response")
 
 	keyWords = ["HELLO", "ALIAS", "JOIN", "DROP", "MAKE", "GROUP"]
 
@@ -288,7 +287,13 @@ puts "#{user_make} created"
 				count = User.count-1
 				sender(email, "Sent #{count} msgs")	# echo back number of msgs sent
 			else		# response to group
-				default_group = user.settings["default-group"]
+				explicit_group = to_address[to_address.index("@")-4,4] unless to_address.index("@").nil?
+				if !explicit_group.nil? and explicit_group!="u@text7.com"
+					default_group = explicit_group
+					puts "Explicit group: #{explicit group}"
+				else
+					default_group = user.settings["default-group"]
+				end
 				if !default_group.nil?
 					group = Group.find_by_id(default_group)
 					@usergroup = Usergroup.find_all_by_group_id(group.id)
@@ -403,7 +408,7 @@ puts "#{user_make} created"
   end
 
 # called to persist inbound messages
-  def persist_text(sent, email, subject)
+  def persist_text(sent, email, to_address, subject)
 	new_user = false
 	duplicate = false
 
@@ -446,9 +451,9 @@ puts "#{user_make} created"
 	if !duplicate
 		sub = subject.split[0...1][0].upcase	unless subject.nil? 		# get command
 		if new_user and sub!="JOIN"		# allow new registration to JOIN group
-			responder(email, subject, "registration_confirmation")
+			responder(email, subject, to_address, "registration_confirmation")
 		else
-			responder(email, subject, "process_existing")
+			responder(email, subject, to_address, "process_existing")
 		end
 	end
   end
