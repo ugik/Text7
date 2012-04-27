@@ -149,7 +149,6 @@ class TextMailer < ActionMailer::Base
 								user.settings["default-group"]=group.id
 								user.save
 							end
-puts "#{user_make} created"
 							subject = "#{user_make} created"
                                                                    #012345678901234567890123456789
 							body = "others can text: JOIN #{user_make}"
@@ -272,24 +271,24 @@ puts "#{user_make} created"
 	if (subject.to_s+body.to_s).length>1
 		if single_response	# single response cases
 
-			sender(email, subject, body)
+			sender(email, subject, to_address, body)
                         if type == "registration_confirmation"
-				sender("georgek@gmail.com", "#{email} registered", "")	# confirmation email
+				sender("georgek@gmail.com", "#{email} registered", to_address, "")	# confirmation email
 			end
 		else		# responses to multiple users
 			count = 0
 			if response["all"]	# response to all
 				User.find_each do |user|
 					if user.cell!=email		# don't send msg to sender
-						sender(user.cell, subject, body)
+						sender(user.cell, subject, to_address, body)
 					end
 				end
 				count = User.count-1
-				sender(email, "Sent #{count} msgs")	# echo back number of msgs sent
+				sender(email, "Sent #{count} msgs", to_address)	# echo back number of msgs sent
 			else		# response to group
 				explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
 				puts "TO: #{explicit_group}"
-				if !explicit_group.nil? and explicit_group!="u@text7.com" and false
+				if !explicit_group.nil? and explicit_group!="u@text7.com"
 					default_group = explicit_group
 					puts "Explicit group: #{explicit_group}"
 				else
@@ -299,12 +298,12 @@ puts "#{user_make} created"
 					group = Group.find_by_id(default_group)
 					@usergroup = Usergroup.find_all_by_group_id(group.id)
 					@usergroup.each do |ug|
-						if ug.user.cell!=email		# don't send msg to sender
-							sender(ug.user.cell, subject, body)
+						if !ug.user.nil? and ug.user.cell!=email		# don't send msg to sender
+							sender(ug.user.cell, subject, to_address, body)
 						end
 					end
 					count = @usergroup.count-1
-					sender(email, "sent #{count} msgs to group:#{group.name}")	# echo back number of msgs sent
+					sender(email, "sent #{count} msgs to group:#{group.name}", to_address) # echo back number of msgs sent
 				end
 			end
 		end
@@ -312,21 +311,21 @@ puts "#{user_make} created"
   end
 
 # called to send text
-  def sender (email, subject="", body="", logo=false)
+  def sender (email, subject="", from, body="", logo=false)
 	subject = "" if subject.nil?
 	body = "" if body.nil?
 
 	if email.include? 'att'	# handle at&t (use 41 char CHUNKS in subject, no body)
 		if (subject+body).length<39	# can it fit in subject?
-			UserMailer.general(email, subject+" / "+body).deliver
+			UserMailer.general(email, subject+" / "+body, from).deliver
 		else
-			UserMailer.general(email, subject).deliver
-			UserMailer.general(email, body[0..40]).deliver if body.length>0
-			UserMailer.general(email, body[41..80]).deliver if body.length>40
-			UserMailer.general(email, body[81..120]).deliver if body.length>80
+			UserMailer.general(email, subject, from).deliver
+			UserMailer.general(email, body[0..40], from).deliver if body.length>0
+			UserMailer.general(email, body[41..80], from).deliver if body.length>40
+			UserMailer.general(email, body[81..120], from).deliver if body.length>80
 		end
 	else
-		UserMailer.general(email, subject, body).deliver unless email.nil?
+		UserMailer.general(email, subject, from, body).deliver unless email.nil?
 	end
 
   end
@@ -432,6 +431,7 @@ puts "#{user_make} created"
 	user = User.find_by_cell(email)
         text = Text.find(:first, :conditions => { :sent => sent, :user_id => user.id }) unless user.nil?
 	if text.nil?
+puts "LENGTH OF SUBJECT: #{subject.length.to_s}"
 		Text.create do |t|	# create the user
 			t.sent = sent
 			t.user_id = user.id
