@@ -22,6 +22,8 @@ class TextMailer < ActionMailer::Base
 
     email = message.from[0].to_s	# first address in array
 
+    puts message.to.inspect
+
     if mail.is_mobile? or email == "ugikma@gmail.com"
         subject = "<None>"
 	cell = mail.number
@@ -150,6 +152,7 @@ class TextMailer < ActionMailer::Base
 							end
 puts "#{user_make} created"
 							subject = "#{user_make} created"
+                                                                   #012345678901234567890123456789
 							body = "others can text: JOIN #{user_make}"
 						else
 							if user.settings["default-group"]==group.id
@@ -272,7 +275,7 @@ puts "#{user_make} created"
 
 			sender(email, subject, body)
                         if type == "registration_confirmation"
-				sender("georgek@gmail.com", "#{email} registered", "")
+				sender("georgek@gmail.com", "#{email} registered", "")	# confirmation email
 			end
 		else		# responses to multiple users
 			count = 0
@@ -295,7 +298,7 @@ puts "#{user_make} created"
 						end
 					end
 					count = @usergroup.count-1
-					sender(email, "#{count} msgs to #{group.name}")	# echo back number of msgs sent
+					sender(email, "sent #{count} msgs to group:#{group.name}")	# echo back number of msgs sent
 				end
 			end
 		end
