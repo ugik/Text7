@@ -293,7 +293,7 @@ class TextMailer < ActionMailer::Base
 					if !grp.nil?
 						default_group = grp.id
 					else
-						sender(email, "No group named #{group.name}", to_address) 
+						sender(email, "No group named #{explicit_group}", to_address) 
 					end
 				else
 					default_group = user.settings["default-group"]
