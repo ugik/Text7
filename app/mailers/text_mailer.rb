@@ -290,7 +290,7 @@ puts "#{user_make} created"
 				explicit_group = to_address[to_address.index("@")-4,4] unless to_address.index("@").nil?
 				if !explicit_group.nil? and explicit_group!="u@text7.com"
 					default_group = explicit_group
-					puts "Explicit group: #{explicit group}"
+					puts "Explicit group: #{explicit_group}"
 				else
 					default_group = user.settings["default-group"]
 				end
