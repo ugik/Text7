@@ -1,23 +1,23 @@
 ActionMailer::Base.delivery_method = :smtp
 
 
-ActionMailer::Base.smtp_settings = {
-      :address => "email-smtp.us-east-1.amazonaws.com",
-      :user_name => ENV["SES_USERNAME"],
-      :password => ENV["SES_PASSWORD"],
-      :authentication => :login,
-      :enable_starttls_auto => true
-  }
+#ActionMailer::Base.smtp_settings = {
+#     :address => "email-smtp.us-east-1.amazonaws.com",
+#      :user_name => ENV["SES_USERNAME"],
+#      :password => ENV["SES_PASSWORD"],
+#      :authentication => :login,
+#      :enable_starttls_auto => true
+#  }
 
 # Mailgun
-#ActionMailer::Base.smtp_settings = {
-#    :authentication => :plain,
-#    :address => "smtp.mailgun.org",
-#    :port => 25,
-#    :domain => "app4057330.mailgun.org ",
-#    :user_name => "postmaster@app4057330.mailgun.org ",
-#    :password => "..."
-#}
+ActionMailer::Base.smtp_settings = {
+    :authentication => :plain,
+    :address => "smtp.mailgun.org",
+    :port => 25,
+    :domain => "app4057330.mailgun.org ",
+    :user_name => "postmaster@app4057330.mailgun.org ",
+    :password => "cassimere"
+}
 
 # SendGrid
 #ActionMailer::Base.smtp_settings = {
