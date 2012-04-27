@@ -311,7 +311,7 @@ class TextMailer < ActionMailer::Base
   end
 
 # called to send text
-  def sender (email, subject="", from, body="", logo=false)
+  def sender (email, subject, from, body="", logo=false)
 	subject = "" if subject.nil?
 	body = "" if body.nil?
 
