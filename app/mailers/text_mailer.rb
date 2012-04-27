@@ -288,6 +288,7 @@ class TextMailer < ActionMailer::Base
 			else		# response to group
 				explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
  				if !explicit_group.nil? and explicit_group!="u"
+puts "EXPLICIT GROUP: #{explicit_group}"
 					default_group = Group.find_by_name(explicit_group).id
 					puts "Explicit group: #{explicit_group}"
 				else
@@ -429,8 +430,7 @@ class TextMailer < ActionMailer::Base
 
 	user = User.find_by_cell(email)
         text = Text.find(:first, :conditions => { :sent => sent, :user_id => user.id }) unless user.nil?
-	if text.nil?
-puts "LENGTH OF SUBJECT: #{subject.length.to_s}"
+	if text.nil? and subject.length<256
 		Text.create do |t|	# create the user
 			t.sent = sent
 			t.user_id = user.id
