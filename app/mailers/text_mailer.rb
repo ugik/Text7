@@ -288,7 +288,7 @@ puts "#{user_make} created"
 				sender(email, "Sent #{count} msgs")	# echo back number of msgs sent
 			else		# response to group
 				explicit_group = to_address[to_address.index("@")-4,4] unless to_address.index("@").nil?
-				if !explicit_group.nil? and explicit_group!="u@text7.com"
+				if !explicit_group.nil? and explicit_group!="u@text7.com" and false
 					default_group = explicit_group
 					puts "Explicit group: #{explicit_group}"
 				else
