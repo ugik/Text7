@@ -287,7 +287,7 @@ class TextMailer < ActionMailer::Base
 				sender(email, "Sent #{count} msgs", to_address)	# echo back number of msgs sent
 			else		# response to group
 				explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
-				if !explicit_group.nil? and explicit_group!="u"
+ 				if !explicit_group.nil? and explicit_group!="u"
 					default_group = Group.find_by_name(explicit_group).id
 					puts "Explicit group: #{explicit_group}"
 				else
@@ -297,7 +297,7 @@ class TextMailer < ActionMailer::Base
 					group = Group.find_by_id(default_group)
 					@usergroup = Usergroup.find_all_by_group_id(group.id)
 					@usergroup.each do |ug|
-						if !ug.user.nil? and ug.user.cell!=email		# don't send msg to sender
+						if !ug.user.nil? and ug.user.cell!=email	# don't send msg to sender
 							sender(ug.user.cell, subject, to_address, body)
 						end
 					end
