@@ -296,13 +296,14 @@ class TextMailer < ActionMailer::Base
 				if !default_group.nil?
 					group = Group.find_by_id(default_group)
 					@usergroup = Usergroup.find_all_by_group_id(group.id)
+					sent_count = 0
 					@usergroup.each do |ug|
 						if !ug.user.nil? and ug.user.cell!=email	 # don't send msg to sender
 							sender(ug.user.cell, subject, to_address, body)
-						end
+							sent_count += 1
+						endf
 					end
-					count = @usergroup.count-1
-					sender(email, "sent #{count} msgs to group:#{group.name}", to_address) # echo back number of msgs sent
+					sender(email, "sent #{sent_count} msgs to group:#{group.name}", to_address) # echo back number of msgs sent
 				end
 			end
 		end
