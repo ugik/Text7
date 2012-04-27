@@ -444,12 +444,14 @@ class TextMailer < ActionMailer::Base
 		end
 	else
 		puts "=> Duplicate Text"		# no 2 inbound texts with same datetime + user
-		if text.settings["pings"].nil?
-			text.settings["pings"]=1
-		else
-			text.settings["pings"]+=1
+		if !text.nil?
+			if text.settings["pings"].nil?
+				text.settings["pings"]=1
+			else
+				text.settings["pings"]+=1
+			end
+			text.save
 		end
-		text.save
 		duplicate = true
 	end
 
