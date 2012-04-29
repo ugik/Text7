@@ -289,22 +289,12 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 			else		# response to group
 				explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
  				if !explicit_group.nil? and explicit_group!="u"
-					puts "Explicit group: #{explicit_group}"
+					puts "Msg to explicit group: #{explicit_group}"
 					grp  = Group.find_by_name(explicit_group.upcase)
 					if !grp.nil?
 						default_group = grp.id
 					else
-#						sender(email, "No group named #{explicit_group}", to_address) 
-					end
-				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => grp.id }) unless user.nil?
-puts "UG: #{ug.inspect}"
-					if ug.nil?
-						Usergroup.create do |new_usergroup| 	# create the usergroup if necessary
-							new_usergroup.user_id = user.id
-							new_usergroup.group_id = group.id
-							new_usergroup.owner = false
-							puts "Usergroup created for User: #{user.id} Group: #{group.id}"
-						end
+						sender(email, "No group named #{explicit_group}", to_address) 
 					end
 				else
 					default_group = user.settings["default-group"]
@@ -438,32 +428,6 @@ puts "UG: #{ug.inspect}"
 			user.cell = email
 			user.settings["pings"]=1	# keep track of times used
 		end
-
-		user = User.find_by_cell(email)
-		explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
-		if !explicit_group.nil? and explicit_group!="u"
-			puts "Explicit group: #{explicit_group}"
-			group  = Group.find_by_name(explicit_group.upcase)
-			if group.nil?
-				Group.create do |new_group|		# create the usergroup if necessary
-					new_group.name = explicit_group.upcase
-				end
-			end
-			group  = Group.find_by_name(explicit_group.upcase)
-			if !group.nil?
-			        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
-				if ug.nil?
-					Usergroup.create do |new_usergroup|		# create the usergroup if necessary
-						new_usergroup.user_id = user.id
-						new_usergroup.group_id = group.id
-						new_usergroup.owner = false
-						puts "Registration Usergroup created for User: #{user.id} Group: #{group.id}"
-					end
-				end
-				user.settings["default-group"]=group.id
-				user.save
-			end
-		end
 		new_user = true
 	else
 		if user.settings["pings"].nil?
@@ -475,6 +439,34 @@ puts "UG: #{ug.inspect}"
 	end
 
 	user = User.find_by_cell(email)
+	
+	# create the group if it is explicit (eg. group-name@text7.com)
+	explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
+	if !explicit_group.nil? and explicit_group!="u"
+		puts "Explicit group: #{explicit_group}"
+		group  = Group.find_by_name(explicit_group.upcase)
+		if group.nil?
+			Group.create do |new_group|		# create the usergroup if necessary
+				new_group.name = explicit_group.upcase
+				puts "Group created: #{new_group.inspect}"
+			end
+		end
+		group  = Group.find_by_name(explicit_group.upcase)
+		if !group.nil?
+		        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
+			if ug.nil?
+				Usergroup.create do |new_usergroup|		# create the usergroup if necessary
+					new_usergroup.user_id = user.id
+					new_usergroup.group_id = group.id
+					new_usergroup.owner = false
+					puts "Usergroup created for User: #{user.id} Group: #{group.id}"
+				end
+			end
+			user.settings["default-group"]=group.id
+			user.save
+		end
+	end
+
         text = Text.find(:first, :conditions => { :sent => sent, :user_id => user.id }) unless user.nil?
 	if text.nil? and subject.length<256
 		Text.create do |t|	# create the user
