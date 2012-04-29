@@ -21,7 +21,7 @@ class TextMailer < ActionMailer::Base
     mail = MMS2R::Media.new(message)        # process mail to handle MMS if sent from phone
 
     email = message.from[0].to_s	# first address in array
-    to_address = message.to[0].to_s   # explicitly named to address (not u@...)
+    to_address = message.to[0].to_s   # explicitly named to address
 
     if mail.is_mobile? or email == "ugikma@gmail.com"
         subject = "<None>"
@@ -274,7 +274,7 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 
 			sender(email, subject, to_address, body)
                         if type == "registration_confirmation"
-				sender("georgek@gmail.com", "#{email} registered", to_address, "")	# confirmation email
+				sender(email, "#{email} registered", to_address, "")	# confirmation email
 			end
 		else		# responses to multiple users
 			count = 0
@@ -423,6 +423,23 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 		User.create do |user|	# create the user
 			user.cell = email
 			user.settings["pings"]=1	# keep track of times used
+
+			explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
+			if !explicit_group.nil? and explicit_group!="u"
+				puts "Explicit group: #{explicit_group}"
+				group  = Group.find_by_name(explicit_group.upcase)
+			        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group }) unless user.nil?
+				if ug.nil?
+					Usergroup.create do |usergroup|		# create the usergroup
+						usergroup.user_id = user.id
+						usergroup.group_id = group.id
+						usergroup.owner = false
+puts "Usergroup created for User: #{user.id} Group: #{group.id}"
+					end
+				end
+				user.settings["default-group"]=group.id
+				user.save
+			end
 		end
 		new_user = true
 	else
@@ -458,11 +475,10 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 
 	if !duplicate
 		sub = subject.split[0...1][0].upcase	unless subject.nil? 		# get command
-		if new_user and sub!="JOIN"		# allow new registration to JOIN group
+		if new_user 	# new registration
 			responder(email, subject, to_address, "registration_confirmation")
-		else
-			responder(email, subject, to_address, "process_existing")
 		end
+		responder(email, subject, to_address, "process_existing")
 	end
   end
 
