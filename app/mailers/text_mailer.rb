@@ -425,6 +425,7 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 			user.settings["pings"]=1	# keep track of times used
 		end
 
+		user = User.find_by_cell(email)
 		explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
 		if !explicit_group.nil? and explicit_group!="u"
 			puts "Explicit group: #{explicit_group}"
