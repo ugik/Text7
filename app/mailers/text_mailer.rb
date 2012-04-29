@@ -181,6 +181,7 @@ class TextMailer < ActionMailer::Base
 							usergroup.user_id = user.id
 							usergroup.group_id = group.id
 							usergroup.owner = false
+puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 						end
 						user.settings["default-group"]=group.id
 						user.save
