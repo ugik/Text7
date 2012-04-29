@@ -294,7 +294,17 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 					if !grp.nil?
 						default_group = grp.id
 					else
-						sender(email, "No group named #{explicit_group}", to_address) 
+#						sender(email, "No group named #{explicit_group}", to_address) 
+					end
+				        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => grp.id }) unless user.nil?
+puts "UG: #{ug.inspect}"
+					if ug.nil?
+						Usergroup.create do |new_usergroup| 	# create the usergroup if necessary
+							new_usergroup.user_id = user.id
+							new_usergroup.group_id = group.id
+							new_usergroup.owner = false
+							puts "Usergroup created for User: #{user.id} Group: #{group.id}"
+						end
 					end
 				else
 					default_group = user.settings["default-group"]
