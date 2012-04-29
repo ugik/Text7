@@ -309,7 +309,11 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 							count+=1
 						end
 					end
-					sender(email, "sent #{count} msgs to group:#{group.name}", to_address) # echo back number of msgs sent
+					if count>0
+						sender(email, "sent #{count} msgs to group:#{group.name}", to_address) # echo back number of msgs sent
+					else
+						sender(email, "nobody in group:#{group.name}", to_address, "ask others to text: #{group.name}@text7.com")
+					end
 				end
 			end
 		end
