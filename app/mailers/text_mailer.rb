@@ -431,7 +431,7 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 				if group.nil?
 					Group.create do |group|		# create the usergroup if necessary
 						group.name = explicit_group.upcase
-puts "Registration Group created: #{group.id} #{groupname}"
+puts "Registration Group created: #{group.id} #{group.name}"
 					end
 				end
 				group  = Group.find_by_name(explicit_group.upcase)
