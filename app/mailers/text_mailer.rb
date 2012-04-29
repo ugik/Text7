@@ -429,7 +429,7 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 				puts "Explicit group: #{explicit_group}"
 				group  = Group.find_by_name(explicit_group.upcase)
 				if group.nil?
-					Group.create do |group|		# create the usergroup
+					Group.create do |group|		# create the usergroup if necessary
 						group.name = explicit_group.upcase
 puts "Registration Group created: #{group.id} #{groupname}"
 					end
@@ -437,7 +437,7 @@ puts "Registration Group created: #{group.id} #{groupname}"
 				group  = Group.find_by_name(explicit_group.upcase)
 			        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group }) unless user.nil?
 				if ug.nil?
-					Usergroup.create do |usergroup|		# create the usergroup
+					Usergroup.create do |usergroup|		# create the usergroup if necessary
 						usergroup.user_id = user.id
 						usergroup.group_id = group.id
 						usergroup.owner = false
