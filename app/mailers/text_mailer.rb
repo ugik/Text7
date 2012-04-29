@@ -423,31 +423,31 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 		User.create do |user|	# create the user
 			user.cell = email
 			user.settings["pings"]=1	# keep track of times used
+		end
 
-			explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
-			if !explicit_group.nil? and explicit_group!="u"
-				puts "Explicit group: #{explicit_group}"
-				group  = Group.find_by_name(explicit_group.upcase)
-				if group.nil?
-					Group.create do |new_group|		# create the usergroup if necessary
-						new_group.name = explicit_group.upcase
+		explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
+		if !explicit_group.nil? and explicit_group!="u"
+			puts "Explicit group: #{explicit_group}"
+			group  = Group.find_by_name(explicit_group.upcase)
+			if group.nil?
+				Group.create do |new_group|		# create the usergroup if necessary
+					new_group.name = explicit_group.upcase
 puts "Registration Group created: #{new_group.name}"
-					end
 				end
-				group  = Group.find_by_name(explicit_group.upcase)
-puts "Group: #{group.inspect}"
-			        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
-				if ug.nil?
-					Usergroup.create do |new_usergroup|		# create the usergroup if necessary
-						new_usergroup.user_id = user.id
-						new_usergroup.group_id = group.id
-						new_usergroup.owner = false
-puts "Registration Usergroup created for User: #{user.id} Group: #{group.id}"
-					end
-				end
-				user.settings["default-group"]=group.id
-				user.save
 			end
+			group  = Group.find_by_name(explicit_group.upcase)
+puts "Group: #{group.inspect}"
+		        ug = Usergroup.find(:first, :conditions => { :user_id => user.id, :group_id => group.id }) unless user.nil?
+			if ug.nil?
+				Usergroup.create do |new_usergroup|		# create the usergroup if necessary
+					new_usergroup.user_id = user.id
+					new_usergroup.group_id = group.id
+					new_usergroup.owner = false
+puts "Registration Usergroup created for User: #{user.id} Group: #{group.id}"
+				end
+			end
+			user.settings["default-group"]=group.id
+			user.save
 		end
 		new_user = true
 	else
