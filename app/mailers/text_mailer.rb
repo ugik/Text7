@@ -93,6 +93,11 @@ class TextMailer < ActionMailer::Base
 				body = ""
 			end
 
+			if response["group_denial"]
+				subject = "Group name must be at least 2 characters"
+				body = "example: jack@text7.com"
+			end
+
 			if response["all"] or response["group-msg"]
 				single_response = false
 			end
@@ -288,7 +293,7 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 				sender(email, "Sent #{count} msgs", to_address)	# echo back number of msgs sent
 			else		# response to group
 				explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
- 				if !explicit_group.nil? and explicit_group!="u"
+ 				if !explicit_group.nil? and explicit_group!="u" and explicit_group.length>1
 					puts "Msg to explicit group: #{explicit_group}"
 					grp  = Group.find_by_name(explicit_group.upcase)
 					if !grp.nil?
@@ -442,7 +447,7 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 	
 	# create the group if it is explicit (eg. group-name@text7.com)
 	explicit_group = to_address[0, to_address.index("@")] unless to_address.index("@").nil?
-	if !explicit_group.nil? and explicit_group!="u"
+	if !explicit_group.nil? and explicit_group.upcase!="U" and explicit_group.lenth>1
 		puts "Explicit group: #{explicit_group}"
 		group  = Group.find_by_name(explicit_group.upcase)
 		if group.nil?
