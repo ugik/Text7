@@ -1,10 +1,5 @@
 class TextMailer < ActionMailer::Base
 
-  # Create an attachment file with some paperclip aware features
-#  class AttachmentFile < Tempfile
-#   attr_accessor :original_filename, :content_type
-#  end
-
   # Called whenever a message is received on the incoming mail controller
   def receive(message)
     # For now just take the first attachment and assume there is only one
@@ -432,6 +427,7 @@ puts "Usergroup created for User: #{user.id} Group: #{group.id}"
 		User.create do |user|	# create the user
 			user.cell = email
 			user.settings["pings"]=1	# keep track of times used
+			sender("georgek@gmail.com", "New Text7 registration", "admin@text7.com", "User cell ##{email}")
 		end
 		new_user = true
 	else
